@@ -19,6 +19,18 @@ services:
     networks:
       - my_network  # Especifica la red a la que pertenece el servicio
 
+  grafana:
+  image: grafana/grafana:latest
+  ports:
+    - "3000:3000"
+  environment:
+    - GF_SECURITY_ADMIN_PASSWORD=admin
+  depends_on:
+    - mysql_db
+  networks:
+    - my_network
+
+
 networks:
   my_network:
     driver: bridge
