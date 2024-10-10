@@ -1,6 +1,6 @@
 services:
   mysql_db:
-    image: mysql:latest  # Asegúrate de usar una versión estable
+    image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: data_db
@@ -17,19 +17,7 @@ services:
     build: .
     command: ["python", "setup_db.py"]
     networks:
-      - my_network  # Especifica la red a la que pertenece el servicio
-
-  grafana:
-  image: grafana/grafana:latest
-  ports:
-    - "3000:3000"
-  environment:
-    - GF_SECURITY_ADMIN_PASSWORD=admin
-  depends_on:
-    - mysql_db
-  networks:
-    - my_network
-
+      - my_network
 
 networks:
   my_network:
