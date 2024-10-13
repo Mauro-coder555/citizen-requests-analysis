@@ -74,7 +74,15 @@ with mysql.connector.connect(**DB_CONFIG) as connection:
     # Conversión de columnas a datetime para manipulación de fechas
     df_solicitudes['F.Solicitud'] = pd.to_datetime(df_solicitudes['F.Solicitud'])
     df_solicitudes['F.Resolucion'] = pd.to_datetime(df_solicitudes['F.Resolucion'])
-    
+
+    # Reemplazar valores nulos o NaN con valores predeterminados
+    df_solicitudes.fillna({
+        'F.Resolucion': datetime.today(),  # O puedes usar un valor específico para fechas
+        'Estado': 'Desconocido',            # Valores para columnas de texto
+        'Origen': 'Desconocido',            # Otra columna que puede tener valores nulos
+        # Agregar más según lo que necesites reemplazar
+    }, inplace=True)
+
     # Crear columnas para Año y Trimestre
     df_solicitudes['Año'] = df_solicitudes['F.Solicitud'].dt.year
     df_solicitudes['Trimestre'] = df_solicitudes['F.Solicitud'].dt.quarter
@@ -90,6 +98,10 @@ with mysql.connector.connect(**DB_CONFIG) as connection:
 
     # Recorrer cada agrupación para calcular e insertar KPIs
     for (año, trimestre), grupo in agrupado:
+        # Convertir tipos de numpy a tipos estándar de Python
+        año = int(año)
+        trimestre = int(trimestre)
+
         # KPI 1: Tiempo de Resolución Promedio
         grupo_resueltas = grupo[grupo['Estado'].isin(['Contestado', 'Resuelto'])]
         tiempo_promedio_resolucion = grupo_resueltas['tiempo_resolucion_dias'].mean()
@@ -99,7 +111,7 @@ with mysql.connector.connect(**DB_CONFIG) as connection:
             cursor.execute("""
                 INSERT INTO kpi_tiempo_resolucion (estado, tiempo_resolucion_promedio, solicitudes_resueltas, rango_tiempo, año, trimestre)
                 VALUES (%s, %s, %s, %s, %s, %s)
-            """, ('Resueltas', tiempo_promedio_resolucion, int(solicitudes_resueltas), 'Trimestral', int(año), int(trimestre)))
+            """, ('Resueltas', float(tiempo_promedio_resolucion), int(solicitudes_resueltas), 'Trimestral', año, trimestre))
             connection.commit()
 
         # KPI 2: Porcentaje de Origen "LIBRO"
@@ -112,7 +124,7 @@ with mysql.connector.connect(**DB_CONFIG) as connection:
             cursor.execute("""
                 INSERT INTO kpi_origen_libro (total_solicitudes, total_libro, porcentaje_libro, objetivo_reduccion, año, trimestre)
                 VALUES (%s, %s, %s, %s, %s, %s)
-            """, (int(total_solicitudes), int(total_libro), porcentaje_libro, objetivo_reduccion, int(año), int(trimestre)))
+            """, (int(total_solicitudes), int(total_libro), float(porcentaje_libro), float(objetivo_reduccion), año, trimestre))
             connection.commit()
 
         # KPI 3: Cantidad de solicitudes por estado
@@ -123,7 +135,7 @@ with mysql.connector.connect(**DB_CONFIG) as connection:
                 cursor.execute("""
                     INSERT INTO kpi_estado_solicitudes (estado, cantidad, porcentaje_total, año, trimestre)
                     VALUES (%s, %s, %s, %s, %s)
-                """, (estado, int(cantidad), porcentaje_estado, int(año), int(trimestre)))
+                """, (estado, int(cantidad), float(porcentaje_estado), año, trimestre))
             connection.commit()
 
         # Tabla de medidas generales
@@ -145,8 +157,8 @@ with mysql.connector.connect(**DB_CONFIG) as connection:
                     año, trimestre
                 )
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (int(total_resueltas), int(total_no_resueltas), porcentaje_resueltas,
+            """, (int(total_resueltas), int(total_no_resueltas), float(porcentaje_resueltas),
                   int(solicitudes_origen_libro), int(solicitudes_origen_web),
                   int(solicitudes_origen_escrito), int(solicitudes_origen_otros),
-                  int(año), int(trimestre)))
+                  año, trimestre))
             connection.commit()

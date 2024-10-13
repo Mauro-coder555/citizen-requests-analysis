@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráficos de Torta - Porcentaje de Solicitudes por Libro</title>
+
+    <!-- Styles -->
+    <style>
+        .chart-container {
+            width: 100%;
+            height: 500px;
+            margin-bottom: 40px;
+        }
+    </style>
+
+    <!-- Resources -->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+</head>
+<body>
+
+<!-- HTML -->
+<div id="charts"></div>
+
+<!-- Chart code -->
+<script>
+    am5.ready(function() {
+        // Fetch data from the API
+        fetch("http://127.0.0.1:5000/get_kpi_origen_libro")
+            .then(response => response.json())
+            .then(data => {
+                // Calculate totals for each year
+                const totals = {};
+
+                data.forEach(item => {
+                    const year = item.año;
+                    if (!totals[year]) {
+                        totals[year] = {
+                            total: 0,
+                            total_libro: 0
+                        };
+                    }
+                    totals[year].total += item.total_solicitudes;
+                    totals[year].total_libro += item.total_libro;
+                });
+
+                // Create a chart for each year
+                for (const [year, { total, total_libro }] of Object.entries(totals)) {
+                    createPieChart(year, total, total_libro);
+                }
+            })
+            .catch(error => console.error('Error fetching data:', error));
+
+        function createPieChart(year, total, total_libro) {
+            // Create a div for the pie chart
+            const chartDiv = document.createElement("div");
+            chartDiv.className = "chart-container";
+            document.getElementById("charts").appendChild(chartDiv);
+            chartDiv.id = `chartdiv-${year}`;
+
+            // Create root element for each chart
+            const root = am5.Root.new(chartDiv.id);
+
+            // Set themes
+            root.setThemes([
+                am5themes_Animated.new(root)
+            ]);
+
+            // Create chart
+            const chart = root.container.children.push(
+                am5percent.PieChart.new(root, {
+                    endAngle: 270
+                })
+            );
+
+            // Create series
+            const series = chart.series.push(
+                am5percent.PieSeries.new(root, {
+                    valueField: "value",
+                    categoryField: "category",
+                    endAngle: 270
+                })
+            );
+
+            series.states.create("hidden", {
+                endAngle: -90
+            });
+
+            // Set data
+            const chartData = [
+                {
+                    category: `Por Libro ${year}`,
+                    value: total_libro
+                },
+                {
+                    category: `Otras ${year}`,
+                    value: total - total_libro
+                }
+            ];
+
+            series.data.setAll(chartData);
+
+            // Make stuff animate on load
+            series.appear(1000, 100);
+        }
+    }); // end am5.ready()
+</script>
+
+</body>
+</html>

@@ -1,230 +1,166 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de KPI - Solicitudes Ciudadanas</title>
-    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
-    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
-    <script src="https://cdn.amcharts.com/lib/5/pie.js"></script>
-    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gráficos KPI</title>
+  <style>
+    #chartdiv, #chartdiv2 {
+      width: 100%;
+      height: 500px;
+      margin-bottom: 20px; /* Espacio entre gráficos */
+    }
+  </style>
 
-        header {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            background-color: #222;
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        header img {
-            width: 100px;
-            margin-right: 20px;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        .chart-container {
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 50px;
-        }
-
-        .chart {
-            width: 45%;
-            height: 400px;
-            background-color: white;
-            border: 1px solid #ddd;
-            padding: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 50px;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        td.green {
-            background-color: #d4edda;
-        }
-
-        td.yellow {
-            background-color: #fff3cd;
-        }
-
-        td.red {
-            background-color: #f8d7da;
-        }
-    </style>
+  <!-- AmCharts Resources -->
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
 </head>
 <body>
-    <!-- Encabezado -->
-    <header>
-        <img src="mismatica.png" alt="Firma de la Empresa">
-        <h1>Dashboard de KPI</h1>
-    </header>
 
-    <!-- Contenedores de gráficos -->
-    <div class="chart-container">
-        <!-- Gráfico KPI 1: Tiempo de Resolución -->
-        <div id="chartTiempoResolucion" class="chart"></div>
+  <!-- Div para el gráfico de solicitudes resueltas -->
+  <div id="chartdiv"></div>
 
-        <!-- Gráfico KPI 2: Porcentaje Origen LIBRO -->
-        <div id="chartOrigenLibro" class="chart"></div>
-    </div>
+  <!-- Div para el gráfico de barras apiladas -->
+  <div id="chartdiv2"></div>
 
-    <!-- Gráfico KPI 3: Estado de Solicitudes -->
-    <div id="chartEstadoSolicitudes" class="chart" style="width: 100%; height: 400px;"></div>
+  <script>
+    // Gráfico de solicitudes resueltas
+    am5.ready(function() {
+      // Crear el elemento root
+      var root = am5.Root.new("chartdiv");
 
-    <!-- Tabla de medidas interesantes -->
-    <h2>Medidas Generales de Solicitudes</h2>
-    <table id="medidasTable">
-        <thead>
-            <tr>
-                <th>Total Resueltas</th>
-                <th>Total No Resueltas</th>
-                <th>Porcentaje Resueltas</th>
-                <th>Solicitudes Origen LIBRO</th>
-                <th>Solicitudes Origen WEB</th>
-                <th>Solicitudes Origen ESCRITO</th>
-                <th>Solicitudes Origen Otros</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Las filas se insertarán aquí dinámicamente -->
-        </tbody>
-    </table>
+      // Aplicar tema animado
+      root.setThemes([am5themes_Animated.new(root)]);
 
-    <script>
-        // Función para obtener datos desde la API
-        async function fetchData(url) {
-            const response = await fetch(url);
-            return await response.json();
-        }
+      // Crear el gráfico XY
+      var chart = root.container.children.push(am5xy.XYChart.new(root, {
+        panX: false,
+        panY: false,
+        paddingLeft: 0,
+        layout: root.verticalLayout
+      }));
 
-        // Renderiza gráficos y tabla una vez que se carguen todos los datos
-        async function renderDashboard() {
-            // Obtener datos desde la API
-            const kpiTiempoResolucion = await fetchData('http://localhost:5000/get_kpi_tiempo_resolucion');
-            const kpiOrigenLibro = await fetchData('http://localhost:5000/get_kpi_origen_libro');
-            const kpiEstadoSolicitudes = await fetchData('http://localhost:5000/get_kpi_estado_solicitudes');
-            const medidasInteresantes = await fetchData('http://localhost:5000/get_medidas_interesantes');
+      // Crear ejes X y Y
+      var xRenderer = am5xy.AxisRendererX.new(root, { minorGridEnabled: true });
+      var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, { categoryField: "category", renderer: xRenderer }));
+      var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, { renderer: am5xy.AxisRendererY.new(root, { strokeOpacity: 0.1 }) }));
 
-            // Verificación de datos obtenidos
-            console.log(kpiTiempoResolucion, kpiOrigenLibro, kpiEstadoSolicitudes, medidasInteresantes);
+      function makeSeries(name, fieldName) {
+        var series = chart.series.push(am5xy.ColumnSeries.new(root, { name: name, xAxis: xAxis, yAxis: yAxis, valueYField: fieldName, categoryXField: "category" }));
+        series.columns.template.setAll({ tooltipText: "{name}, {categoryX}:{valueY}" });
+        series.appear();
+      }
 
-            // Gráfico KPI 1: Tiempo de Resolución
-            am5.ready(function() {
-                var root = am5.Root.new("chartTiempoResolucion");
-                var chart = root.container.children.push(am5xy.XYChart.new(root, {
-                    layout: root.verticalLayout
-                }));
+      fetch("get_kpi_tiempo_resolucion")
+        .then(response => response.json())
+        .then(data => {
+          const groupedData = {};
+          data.forEach(item => {
+            const year = item.año;
+            const quarter = item.trimestre;
+            const category = `${year} - T${quarter}`;
+            if (!groupedData[category]) {
+              groupedData[category] = { category: category, solicitudes_resueltas: 0 };
+            }
+            groupedData[category].solicitudes_resueltas += item.solicitudes_resueltas;
+          });
+          const processedData = Object.values(groupedData);
+          xAxis.data.setAll(processedData);
+          makeSeries("Solicitudes Resueltas", "solicitudes_resueltas");
+          chart.series.each(series => { series.data.setAll(processedData); });
+          chart.appear(1000, 100);
+        })
+        .catch(error => console.error("Error al obtener los datos:", error));
+    });
 
-                var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
-                    categoryField: "rango_tiempo",
-                    renderer: am5xy.AxisRendererX.new(root, {})
-                }));
-                xAxis.data.setAll(kpiTiempoResolucion);
+    // Gráfico de barras apiladas
+    am5.ready(function() {
+      // Crear el elemento root
+      var root2 = am5.Root.new("chartdiv2");
 
-                var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-                    renderer: am5xy.AxisRendererY.new(root, {})
-                }));
+      // Crear chart
+      var chart2 = root2.container.children.push(am5xy.XYChart.new(root2, {
+        panX: false,
+        panY: false,
+        wheelX: "panY",
+        wheelY: "zoomY",
+        paddingLeft: 0,
+        layout: root2.verticalLayout
+      }));
 
-                var series = chart.series.push(am5xy.ColumnSeries.new(root, {
-                    name: "Tiempo Resolución Promedio",
-                    xAxis: xAxis,
-                    yAxis: yAxis,
-                    valueYField: "tiempo_resolucion_promedio",
-                    categoryXField: "rango_tiempo"
-                }));
-                series.data.setAll(kpiTiempoResolucion);
-                series.columns.template.set("tooltipText", "{categoryX}: [bold]{valueY}[/]");
-            });
+      // Añadir scrollbar
+      chart2.set("scrollbarY", am5.Scrollbar.new(root2, { orientation: "vertical" }));
 
-            // Gráfico KPI 2: Porcentaje de origen LIBRO
-            am5.ready(function() {
-                var root = am5.Root.new("chartOrigenLibro");
-                var chart = root.container.children.push(am5percent.PieChart.new(root, {}));
-                var series = chart.series.push(am5percent.PieSeries.new(root, {
-                    valueField: "total_libro",
-                    categoryField: "origen"
-                }));
+      // Crear ejes
+      var yRenderer = am5xy.AxisRendererY.new(root2, {});
+      var yAxis2 = chart2.yAxes.push(am5xy.CategoryAxis.new(root2, { categoryField: "year", renderer: yRenderer }));
+      var xAxis2 = chart2.xAxes.push(am5xy.ValueAxis.new(root2, { min: 0, maxPrecision: 0, renderer: am5xy.AxisRendererX.new(root2, { minGridDistance: 40, strokeOpacity: 0.1 }) }));
 
-                // Asegúrate de que kpiOrigenLibro tenga la estructura adecuada
-                series.data.setAll([
-                    { "origen": "LIBRO", "total_libro": kpiOrigenLibro.total_libro || 0 },
-                    { "origen": "Otros", "total_libro": (kpiOrigenLibro.total_solicitudes || 0) - (kpiOrigenLibro.total_libro || 0) }
-                ]);
-            });
+      // Añadir leyenda
+      var legend2 = chart2.children.push(am5.Legend.new(root2, { centerX: am5.p50, x: am5.p50 }));
 
-            // Gráfico KPI 3: Estado de Solicitudes
-            am5.ready(function() {
-                var root = am5.Root.new("chartEstadoSolicitudes");
-                var chart = root.container.children.push(am5xy.XYChart.new(root, {
-                    layout: root.verticalLayout
-                }));
+      // Obtener los datos de la nueva ruta
+      fetch("http://127.0.0.1:5000/get_kpi_estado_solicitudes")
+        .then(response => response.json())
+        .then(data => {
+          const groupedData = {};
+          const estados = new Set();
 
-                var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
-                    categoryField: "estado",
-                    renderer: am5xy.AxisRendererX.new(root, {})
-                }));
-                xAxis.data.setAll(kpiEstadoSolicitudes);
+          // Agrupar los datos por año y estado
+          data.forEach(item => {
+            const year = item.año;
+            const estado = item.estado;
+            if (!groupedData[year]) {
+              groupedData[year] = { year: year }; // Inicializa el año
+            }
+            if (!groupedData[year][estado]) {
+              groupedData[year][estado] = 0; // Inicializa el estado
+            }
+            groupedData[year][estado] += item.cantidad; // Sumar la cantidad
+            estados.add(estado); // Agregar el estado a la lista
+          });
 
-                var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-                    renderer: am5xy.AxisRendererY.new(root, {})
-                }));
+          const processedData = Object.values(groupedData);
+          yAxis2.data.setAll(processedData);
 
-                var series = chart.series.push(am5xy.ColumnSeries.new(root, {
-                    name: "Cantidad",
-                    xAxis: xAxis,
-                    yAxis: yAxis,
-                    valueYField: "cantidad",
-                    categoryXField: "estado"
-                }));
-                series.data.setAll(kpiEstadoSolicitudes);
-                series.columns.template.set("tooltipText", "{categoryX}: [bold]{valueY}[/]");
-            });
+          // Crear las series para cada estado dinámicamente
+          estados.forEach(estado => {
+            makeSeries(estado, estado);
+          });
 
-            // Tabla de Medidas Generales
-            const tbody = document.querySelector("#medidasTable tbody");
-            medidasInteresantes.forEach(medida => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td class="${medida.total_resueltas > 50 ? 'green' : medida.total_resueltas > 30 ? 'yellow' : 'red'}">${medida.total_resueltas}</td>
-                    <td class="${medida.total_no_resueltas < 50 ? 'green' : medida.total_no_resueltas < 70 ? 'yellow' : 'red'}">${medida.total_no_resueltas}</td>
-                    <td class="${medida.porcentaje_resueltas > 75 ? 'green' : medida.porcentaje_resueltas > 50 ? 'yellow' : 'red'}">${medida.porcentaje_resueltas}%</td>
-                    <td class="${medida.solicitudes_libro > 30 ? 'green' : medida.solicitudes_libro > 15 ? 'yellow' : 'red'}">${medida.solicitudes_libro}</td>
-                    <td class="${medida.solicitudes_web > 30 ? 'green' : medida.solicitudes_web > 15 ? 'yellow' : 'red'}">${medida.solicitudes_web}</td>
-                    <td class="${medida.solicitudes_escrito > 30 ? 'green' : medida.solicitudes_escrito > 15 ? 'yellow' : 'red'}">${medida.solicitudes_escrito}</td>
-                    <td class="${medida.solicitudes_otros > 30 ? 'green' : medida.solicitudes_otros > 15 ? 'yellow' : 'red'}">${medida.solicitudes_otros}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
+          // Asignar datos a las series
+          chart2.series.each(series => {
+            series.data.setAll(processedData);
+          });
 
-        // Llamar a la función para renderizar el dashboard
-        renderDashboard();
-    </script>
+          chart2.appear(1000, 100);
+        })
+        .catch(error => console.error("Error al obtener los datos:", error));
+    });
+
+    function makeSeries(name, fieldName) {
+      var series = chart2.series.push(am5xy.ColumnSeries.new(root2, {
+        name: name,
+        stacked: true, // Apilar las barras
+        xAxis: xAxis2,
+        yAxis: yAxis2,
+        baseAxis: yAxis2,
+        valueXField: fieldName,
+        categoryYField: "year"
+      }));
+
+      series.columns.template.setAll({
+        tooltipText: "{name}, {categoryY}: {valueX}",
+        tooltipY: am5.percent(90)
+      });
+
+      // Hacer que las columnas aparezcan al cargar
+      series.appear();
+    }
+
+  </script>
+
 </body>
 </html>
