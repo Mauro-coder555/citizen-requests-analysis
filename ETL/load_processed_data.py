@@ -1,15 +1,8 @@
 import pandas as pd
 import mysql.connector
-import numpy as np
+from mysql.connector import Error
 
-# Leer el archivo CSV con la columna F.Resolucion ya agregada
-df = pd.read_csv('data/requests.csv', sep=';')
-
-# Asegurarnos de que las columnas 'F.Solicitud' y 'F.Resolucion' estén en formato de fecha
-df['F.Solicitud'] = pd.to_datetime(df['F.Solicitud'], errors='coerce')
-df['F.Resolucion'] = pd.to_datetime(df['F.Resolucion'], errors='coerce')
-
-# Conexión a MySQL
+# Configuración de conexión a MySQL
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'user',
@@ -17,173 +10,182 @@ DB_CONFIG = {
     'database': 'data_db'
 }
 
-connection = mysql.connector.connect(
-    host=DB_CONFIG['host'],
-    user=DB_CONFIG['user'],
-    password=DB_CONFIG['password'],
-    database=DB_CONFIG['database']
-)
-cursor = connection.cursor()
+def create_tables(cursor):
+    # Crear tabla de solicitudes
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS solicitudes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            tipo VARCHAR(50),
+            estado VARCHAR(50),
+            fecha_solicitud DATE,
+            origen VARCHAR(50),
+            unidad VARCHAR(100),
+            provincia VARCHAR(50),
+            referencia TEXT,
+            fecha_resolucion DATE,
+            tiempo_resolucion INT -- Tiempo de resolución en días
+        )
+    ''')
 
-# Crear las tablas si no existen
-create_tables_sql = [
-    """
-    CREATE TABLE IF NOT EXISTS kpi_tiempo_resolucion (
-        trimestre INT,
-        año INT,
-        objetivo DECIMAL(5, 2),
-        tiempo_promedio_resolucion DECIMAL(5, 2),
-        total_resueltas INT,
-        año_trimestre VARCHAR(20),
-        PRIMARY KEY (trimestre, año)
-    )
-    """,
-    """
-    CREATE TABLE IF NOT EXISTS kpi_porcentaje_resueltas (
-        trimestre INT,
-        año INT,
-        porcentaje_resueltas DECIMAL(5, 2),
-        objetivo DECIMAL(5, 2),
-        año_trimestre VARCHAR(20),
-        PRIMARY KEY (trimestre, año)
-    )
-    """,
-    """
-    CREATE TABLE IF NOT EXISTS kpi_distribucion_origen (
-        trimestre INT,
-        año INT,
-        origen VARCHAR(50),
-        cantidad INT,
-        total_solicitudes INT,
-        porcentaje DECIMAL(5, 2),
-        objetivo DECIMAL(5, 2),
-        año_trimestre VARCHAR(20),
-        PRIMARY KEY (trimestre, año, origen)
-    )
-    """,
-    """
-    CREATE TABLE IF NOT EXISTS kpi_medidas (
-        año INT,
-        trimestre INT,
-        resueltas INT,
-        no_resueltas INT,
-        total_solicitudes INT,
-        porcentaje_resueltas DECIMAL(5, 2),
-        porcentaje_no_resueltas DECIMAL(5, 2),
-        año_trimestre VARCHAR(20),
-        PRIMARY KEY (año, trimestre)
-    )
-    """
-]
+    # KPI 1: Tasa de resolución por tipo de solicitud (agrupada por año)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tasa_resolucion_por_tipo (
+            año INT,  -- Año de las solicitudes
+            tipo VARCHAR(50),
+            total_solicitudes INT,
+            solicitudes_resueltas INT,
+            tasa_resolucion DECIMAL(5, 2)
+        )
+    ''')
 
-# Ejecutar cada consulta para crear las tablas
-for query in create_tables_sql:
-    cursor.execute(query)
+    # KPI 2: Volumen de solicitudes por origen (agrupada por año)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS volumen_solicitudes_por_origen (
+            año INT,  -- Año de las solicitudes
+            origen VARCHAR(50),
+            total_solicitudes INT
+        )
+    ''')
 
-# Procesar los datos y calcular KPIs
-df['trimestre'] = df['F.Solicitud'].dt.to_period('Q').dt.quarter
-df['año'] = df['F.Solicitud'].dt.year
+    # KPI 3: Distribución de estados (agrupada por año)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS distribucion_estados (
+            año INT,  -- Año de las solicitudes
+            estado VARCHAR(50),
+            total_solicitudes INT
+        )
+    ''')
 
-# Crear un dataframe con la combinación completa de trimestres y años
-trimestres_completos = pd.DataFrame({
-    'trimestre': [1, 2, 3, 4] * len(df['año'].unique()),
-    'año': sorted(df['año'].unique().tolist() * 4)
-})
+    # KPI 4: Tiempo promedio de resolución (Por tipo y por origen)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tiempo_promedio_resolucion (
+            año INT,  -- Año de las solicitudes
+            tipo VARCHAR(50),
+            origen VARCHAR(50),
+            tiempo_promedio_resolucion DECIMAL(10, 2) -- Tiempo promedio en días
+        )
+    ''')
 
-# --- KPI 1: Tiempo Promedio de Resolución ---
-kpi_tiempo_resolucion = df[df['Estado'] == 'Contestado'].copy()
-kpi_tiempo_resolucion['tiempo_resolucion'] = (kpi_tiempo_resolucion['F.Resolucion'] - kpi_tiempo_resolucion['F.Solicitud']).dt.days
+    # KPI 5: Tasa de solicitudes inadmitidas o anuladas (agrupada por año)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tasa_inadmitidas_anuladas (
+            año INT,  -- Año de las solicitudes
+            total_solicitudes INT,
+            total_inadmitidas INT,
+            total_anuladas INT,
+            tasa_inadmitidas_anuladas DECIMAL(5, 2)
+        )
+    ''')
 
-# Crear columna año_trimestre
-kpi_tiempo_resolucion['año_trimestre'] = kpi_tiempo_resolucion['año'].astype(str) + '-Q' + kpi_tiempo_resolucion['trimestre'].astype(str)
+def insert_requests(cursor, df):
+    for index, row in df.iterrows():
+        cursor.execute('''
+            INSERT INTO solicitudes (tipo, estado, fecha_solicitud, origen, unidad, provincia, referencia, fecha_resolucion, tiempo_resolucion)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ''', (
+            row['Tipo'],
+            row['Estado'],
+            row['F.Solicitud'],
+            row['Origen'],
+            row['Unidad'],
+            row['Provincia'],
+            row['Referencia'],
+            row['F.Resolucion'],
+            row['tiempo_resolucion']  # Días de diferencia entre F.Resolucion y F.Solicitud
+        ))
 
-# Agrupar por trimestre y año, calculando el tiempo promedio de resolución
-kpi_tiempo_resolucion_agg = kpi_tiempo_resolucion.groupby(['trimestre', 'año', 'año_trimestre']).agg(
-    tiempo_promedio_resolucion=pd.NamedAgg(column='tiempo_resolucion', aggfunc='mean'),
-    total_resueltas=pd.NamedAgg(column='Estado', aggfunc='count')
-).reset_index()
+def calculate_kpis(cursor):
+    # KPI 1: Tasa de resolución por tipo de solicitud (por año)
+    cursor.execute('''
+        INSERT INTO tasa_resolucion_por_tipo (año, tipo, total_solicitudes, solicitudes_resueltas, tasa_resolucion)
+        SELECT YEAR(fecha_solicitud) AS año,
+               tipo,
+               COUNT(*) AS total_solicitudes,
+               SUM(CASE WHEN estado = 'Contestado' THEN 1 ELSE 0 END) AS solicitudes_resueltas,
+               (SUM(CASE WHEN estado = 'Contestado' THEN 1 ELSE 0 END) / COUNT(*)) * 100 AS tasa_resolucion
+        FROM solicitudes
+        GROUP BY año, tipo;
+    ''')
 
-# Definir el objetivo
-objetivo_tiempo_resolucion = 270  # Por ejemplo, el objetivo es que el tiempo promedio no exceda 27 días
+    # KPI 2: Volumen de solicitudes por origen (por año)
+    cursor.execute('''
+        INSERT INTO volumen_solicitudes_por_origen (año, origen, total_solicitudes)
+        SELECT YEAR(fecha_solicitud) AS año, origen, COUNT(*)
+        FROM solicitudes
+        GROUP BY año, origen;
+    ''')
 
-# Insertar en la tabla MySQL
-for index, row in kpi_tiempo_resolucion_agg.iterrows():
-    cursor.execute("""
-    INSERT INTO kpi_tiempo_resolucion (trimestre, año, tiempo_promedio_resolucion, total_resueltas, objetivo, año_trimestre)
-    VALUES (%s, %s, %s, %s, %s, %s)
-    """, (row['trimestre'], row['año'], row['tiempo_promedio_resolucion'], row['total_resueltas'], objetivo_tiempo_resolucion, row['año_trimestre']))
+    # KPI 3: Distribución de estados de las solicitudes (por año)
+    cursor.execute('''
+        INSERT INTO distribucion_estados (año, estado, total_solicitudes)
+        SELECT YEAR(fecha_solicitud) AS año, estado, COUNT(*)
+        FROM solicitudes
+        GROUP BY año, estado;
+    ''')
 
+    # KPI 4: Tiempo promedio de resolución por tipo y origen (por año)
+    cursor.execute('''
+        INSERT INTO tiempo_promedio_resolucion (año, tipo, origen, tiempo_promedio_resolucion)
+        SELECT YEAR(fecha_solicitud) AS año,
+               tipo,
+               origen,
+               AVG(tiempo_resolucion) AS tiempo_promedio_resolucion  -- Promedio de días de resolución
+        FROM solicitudes
+        WHERE tiempo_resolucion >= 0
+        GROUP BY año, tipo, origen;
+    ''')
 
+    # KPI 5: Tasa de solicitudes Inadmitidas o anuladas (por año)
+    cursor.execute('''
+        INSERT INTO tasa_inadmitidas_anuladas (año, total_solicitudes, total_inadmitidas, total_anuladas, tasa_inadmitidas_anuladas)
+        SELECT YEAR(fecha_solicitud) AS año,
+               COUNT(*) AS total_solicitudes,
+               SUM(CASE WHEN estado = 'Inadmitida' THEN 1 ELSE 0 END) AS total_inadmitidas,
+               SUM(CASE WHEN estado = 'Anulada' THEN 1 ELSE 0 END) AS total_anuladas,
+               ((SUM(CASE WHEN estado = 'Inadmitida' THEN 1 ELSE 0 END) + SUM(CASE WHEN estado = 'Anulada' THEN 1 ELSE 0 END)) / COUNT(*)) * 100 AS tasa_inadmitidas_anuladas
+        FROM solicitudes
+        GROUP BY año;
+    ''')
 
-# --- KPI 2: Porcentaje de Solicitudes Resueltas ---
-kpi_resueltas = df.groupby(['trimestre', 'año']).agg(
-    porcentaje_resueltas=pd.NamedAgg(column='Estado', aggfunc=lambda x: (x == 'Contestado').sum() / x.count() * 100)
-).reset_index()
+def main():
+    # Leer el archivo CSV con los datos de solicitudes
+    df = pd.read_csv('data/requests.csv', sep=';')
 
-# Asegurar que todos los trimestres estén presentes en kpi_resueltas
-kpi_resueltas = pd.merge(trimestres_completos, kpi_resueltas, on=['trimestre', 'año'], how='left')
-kpi_resueltas['porcentaje_resueltas'] = kpi_resueltas['porcentaje_resueltas'].fillna(0)
+    # Convertir las fechas a datetime
+    df['F.Solicitud'] = pd.to_datetime(df['F.Solicitud'], format='%Y-%m-%d')
+    df['F.Resolucion'] = pd.to_datetime(df['F.Resolucion'], format='%Y-%m-%d', errors='coerce')
 
-# Calcular el objetivo: 10% más que el trimestre anterior o 50% inicial
-kpi_resueltas['objetivo'] = kpi_resueltas['porcentaje_resueltas'].shift(1) * 1.10
-kpi_resueltas['objetivo'] = kpi_resueltas['objetivo'].fillna(50)
+    # Calcular tiempo de resolución en días
+    df['tiempo_resolucion'] = (df['F.Resolucion'] - df['F.Solicitud']).dt.days
 
-# Crear columna de identificación de trimestre-año
-kpi_resueltas['año_trimestre'] = kpi_resueltas['año'].astype(str) + "-Q" + kpi_resueltas['trimestre'].astype(str)
+    # Reemplazar NaN con valores adecuados
+    df.fillna({
+        'Estado': 'Desconocido',
+        'F.Resolucion': pd.Timestamp('2099-12-31'),  # Asumimos una fecha futura si no se ha resuelto
+        'tiempo_resolucion': -1,  # -1 si no se ha resuelto
+        'Origen': 'No especificado',
+        'Unidad': 'No asignada'
+    }, inplace=True)
+    df.dropna(inplace=True)
 
-# Insertar en MySQL
-for index, row in kpi_resueltas.iterrows():
-    cursor.execute("""
-    INSERT INTO kpi_porcentaje_resueltas (trimestre, año, porcentaje_resueltas, objetivo, año_trimestre)
-    VALUES (%s, %s, %s, %s, %s)
-    """, (row['trimestre'], row['año'], row['porcentaje_resueltas'], row['objetivo'], row['año_trimestre']))
+    try:
+        # Conectar a la base de datos
+        connection = mysql.connector.connect(**DB_CONFIG)
+        if connection.is_connected():
+            cursor = connection.cursor()
+            create_tables(cursor)
+            insert_requests(cursor, df)
+            calculate_kpis(cursor)
 
-# --- KPI 3: Distribución de Solicitudes por Origen ---
-kpi_libro = df[df['Origen'] == 'LIBRO'].groupby(['trimestre', 'año']).agg(
-    cantidad_libro=pd.NamedAgg(column='Estado', aggfunc='count')
-).reset_index()
+            # Confirmar los cambios
+            connection.commit()
 
-total_solicitudes_trimestre = df.groupby(['trimestre', 'año']).agg(
-    total_solicitudes=pd.NamedAgg(column='Estado', aggfunc='count')
-).reset_index()
+    except Error as e:
+        print(f"Error al conectar a MySQL: {e}")
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
 
-kpi_libro = kpi_libro.merge(total_solicitudes_trimestre, on=['trimestre', 'año'], how='left')
-kpi_libro['porcentaje'] = kpi_libro['cantidad_libro'] / kpi_libro['total_solicitudes'] * 100
-kpi_libro['objetivo'] = kpi_libro['porcentaje'].shift(1) * 0.90  # Objetivo de reducir en un 10%
-kpi_libro['objetivo'] = kpi_libro['objetivo'].fillna(0)  # El objetivo del primer trimestre es 0
-
-# Crear columna de identificación de trimestre-año
-kpi_libro['año_trimestre'] = kpi_libro['año'].astype(str) + "-Q" + kpi_libro['trimestre'].astype(str)
-
-# Insertar en MySQL
-for index, row in kpi_libro.iterrows():
-    cursor.execute("""
-    INSERT INTO kpi_distribucion_origen (trimestre, año, origen, cantidad, total_solicitudes, porcentaje, objetivo, año_trimestre)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-    """, (row['trimestre'], row['año'], 'LIBRO', row['cantidad_libro'], row['total_solicitudes'], row['porcentaje'], row['objetivo'], row['año_trimestre']))
-
-# --- KPI 4: Medidas Comparativas ---
-df['solicitudes_resueltas'] = df['Estado'] == 'Contestado'
-kpi_medidas = df.groupby(['año', 'trimestre']).agg(
-    resueltas=pd.NamedAgg(column='solicitudes_resueltas', aggfunc='sum'),
-    no_resueltas=pd.NamedAgg(column='solicitudes_resueltas', aggfunc=lambda x: (~x).sum()),
-    total_solicitudes=pd.NamedAgg(column='Estado', aggfunc='count')
-).reset_index()
-
-kpi_medidas['porcentaje_resueltas'] = (kpi_medidas['resueltas'] / kpi_medidas['total_solicitudes']) * 100
-kpi_medidas['porcentaje_no_resueltas'] = (kpi_medidas['no_resueltas'] / kpi_medidas['total_solicitudes']) * 100
-kpi_medidas['año_trimestre'] = kpi_medidas['año'].astype(str) + "-Q" + kpi_medidas['trimestre'].astype(str)
-
-# Insertar en MySQL
-for index, row in kpi_medidas.iterrows():
-    cursor.execute("""
-    INSERT INTO kpi_medidas (año, trimestre, resueltas, no_resueltas, total_solicitudes, porcentaje_resueltas, porcentaje_no_resueltas, año_trimestre)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-    """, (row['año'], row['trimestre'], row['resueltas'], row['no_resueltas'], row['total_solicitudes'], row['porcentaje_resueltas'], row['porcentaje_no_resueltas'], row['año_trimestre']))
-
-# Confirmar los cambios
-connection.commit()
-
-# Cerrar la conexión
-cursor.close()
-connection.close()
+if __name__ == "__main__":
+    main()

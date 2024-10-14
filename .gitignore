@@ -3,3 +3,6 @@ mysql-data/
 
 # Entornos virtuales
 myenv/
+
+# Archivos de prueba
+aux-files/

@@ -1,166 +1,664 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gráficos KPI</title>
-  <style>
-    #chartdiv, #chartdiv2 {
-      width: 100%;
-      height: 500px;
-      margin-bottom: 20px; /* Espacio entre gráficos */
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Múltiples Gráficos</title>
+    <!-- Styles -->
+    <style>
+        .chart-container {
+            width: 100%;
+            height: 500px;
+            margin-bottom: 90px;
+            /* Espacio entre gráficos */
+        }
+    </style>
 
-  <!-- AmCharts Resources -->
-  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
-  <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
-  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    <!-- Resources -->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
 </head>
+
+<header>
+    <img src="mismatica.png" alt="Firma de la empresa">
+    <h1>Mismatica Management</h1>
+  </header>
+
 <body>
+    <!-- HTML -->
+    <div id="chartdiv1" class="chart-container"></div>
+    <div id="chartdiv2" class="chart-container"></div>
+    <div id="chartdiv3" class="chart-container"></div>
+    <div id="chartdiv4" class="chart-container"></div>
+    <div id="chartdiv5" class="chart-container"></div>
+    <div id="chartdiv6" class="chart-container"></div>
 
-  <!-- Div para el gráfico de solicitudes resueltas -->
-  <div id="chartdiv"></div>
+    <!-- Chart code -->
+    <script>
 
-  <!-- Div para el gráfico de barras apiladas -->
-  <div id="chartdiv2"></div>
+        // Crear gráficos
+        createTasaResolucionTipoChart("chartdiv1", "http://localhost:5000/get_tasa_resolucion_por_tipo", "Tasa de Resolución por Tipo");
+        createVolumenSolicitudesOrigenChart("chartdiv2", "http://localhost:5000/get_volumen_solicitudes_por_origen", "Volumen de solicitudes por origen");
+        createDistribucionEstadosChart("chartdiv3", "http://localhost:5000/get_distribucion_estados", "Distribución por estado");
+        createTiempoTipoChart("chartdiv4", "http://localhost:5000/get_tiempo_promedio_resolucion", "Tiempo promedio de resolución por tipo");
+        createTiempoOrigen("chartdiv5", "http://localhost:5000/get_tiempo_promedio_resolucion", "Tiempo promedio de  por origen");
+        createTasaInadmitidasANuladasChart("chartdiv6", "http://localhost:5000/get_tasa_inadmitidas_anuladas", "Tasa inadmitidas-anuladas");
+    
+        function createTasaResolucionTipoChart(chartDivId, dataUrl, chartName) {
+            am5.ready(function () {
+                // Create root element
+                var root = am5.Root.new(chartDivId);
 
-  <script>
-    // Gráfico de solicitudes resueltas
-    am5.ready(function() {
-      // Crear el elemento root
-      var root = am5.Root.new("chartdiv");
+                // Set themes
+                root.setThemes([
+                    am5themes_Animated.new(root)
+                ]);
 
-      // Aplicar tema animado
-      root.setThemes([am5themes_Animated.new(root)]);
+                // Create chart
+                var chart = root.container.children.push(am5xy.XYChart.new(root, {
+                    panX: false,
+                    panY: false,
+                    layout: root.verticalLayout
+                }));
 
-      // Crear el gráfico XY
-      var chart = root.container.children.push(am5xy.XYChart.new(root, {
-        panX: false,
-        panY: false,
-        paddingLeft: 0,
-        layout: root.verticalLayout
-      }));
+                // Create axes
+                var yAxis = chart.yAxes.push(am5xy.CategoryAxis.new(root, {
+                    categoryField: "year",
+                    renderer: am5xy.AxisRendererY.new(root, {
+                        inversed: true,
+                        cellStartLocation: 0.1,
+                        cellEndLocation: 0.9,
+                        minorGridEnabled: true
+                    })
+                }));
 
-      // Crear ejes X y Y
-      var xRenderer = am5xy.AxisRendererX.new(root, { minorGridEnabled: true });
-      var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, { categoryField: "category", renderer: xRenderer }));
-      var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, { renderer: am5xy.AxisRendererY.new(root, { strokeOpacity: 0.1 }) }));
+                var xAxis = chart.xAxes.push(am5xy.ValueAxis.new(root, {
+                    renderer: am5xy.AxisRendererX.new(root, {
+                        strokeOpacity: 0.1,
+                        minGridDistance: 50
+                    }),
+                    min: 0
+                }));
 
-      function makeSeries(name, fieldName) {
-        var series = chart.series.push(am5xy.ColumnSeries.new(root, { name: name, xAxis: xAxis, yAxis: yAxis, valueYField: fieldName, categoryXField: "category" }));
-        series.columns.template.setAll({ tooltipText: "{name}, {categoryX}:{valueY}" });
-        series.appear();
-      }
+                // Fetch data from API
+                fetch(dataUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        let processedData = [];
+                        let years = [...new Set(data.map(item => item["año"]))];
 
-      fetch("get_kpi_tiempo_resolucion")
-        .then(response => response.json())
-        .then(data => {
-          const groupedData = {};
-          data.forEach(item => {
-            const year = item.año;
-            const quarter = item.trimestre;
-            const category = `${year} - T${quarter}`;
-            if (!groupedData[category]) {
-              groupedData[category] = { category: category, solicitudes_resueltas: 0 };
-            }
-            groupedData[category].solicitudes_resueltas += item.solicitudes_resueltas;
-          });
-          const processedData = Object.values(groupedData);
-          xAxis.data.setAll(processedData);
-          makeSeries("Solicitudes Resueltas", "solicitudes_resueltas");
-          chart.series.each(series => { series.data.setAll(processedData); });
-          chart.appear(1000, 100);
-        })
-        .catch(error => console.error("Error al obtener los datos:", error));
-    });
+                        years.forEach(year => {
+                            let yearData = data.filter(item => item["año"] === year);
+                            yearData.forEach(item => {
+                                processedData.push({
+                                    year: item["año"],
+                                    tipo: item.tipo,
+                                    tasa_resolucion: parseFloat(item.tasa_resolucion)
+                                });
+                            });
+                        });
 
-    // Gráfico de barras apiladas
-    am5.ready(function() {
-      // Crear el elemento root
-      var root2 = am5.Root.new("chartdiv2");
+                        yAxis.data.setAll(years.map(year => ({ year: year })));
 
-      // Crear chart
-      var chart2 = root2.container.children.push(am5xy.XYChart.new(root2, {
-        panX: false,
-        panY: false,
-        wheelX: "panY",
-        wheelY: "zoomY",
-        paddingLeft: 0,
-        layout: root2.verticalLayout
-      }));
+                        let tipos = [...new Set(processedData.map(item => item.tipo))];
+                        tipos.forEach(tipo => {
+                            let seriesData = processedData.filter(item => item.tipo === tipo);
+                            createSeries(chart, tipo, seriesData);
+                        });
 
-      // Añadir scrollbar
-      chart2.set("scrollbarY", am5.Scrollbar.new(root2, { orientation: "vertical" }));
+                        function createSeries(chart, field, seriesData) {
+                            var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+                                name: field,
+                                xAxis: xAxis,
+                                yAxis: yAxis,
+                                valueXField: "tasa_resolucion",
+                                categoryYField: "year",
+                                tooltip: am5.Tooltip.new(root, {
+                                    pointerOrientation: "horizontal",
+                                    labelText: "[bold]{name}[/]\n{categoryY}: {valueX} %"
+                                })
+                            }));
 
-      // Crear ejes
-      var yRenderer = am5xy.AxisRendererY.new(root2, {});
-      var yAxis2 = chart2.yAxes.push(am5xy.CategoryAxis.new(root2, { categoryField: "year", renderer: yRenderer }));
-      var xAxis2 = chart2.xAxes.push(am5xy.ValueAxis.new(root2, { min: 0, maxPrecision: 0, renderer: am5xy.AxisRendererX.new(root2, { minGridDistance: 40, strokeOpacity: 0.1 }) }));
+                            series.columns.template.setAll({
+                                height: am5.p100,
+                                strokeOpacity: 0
+                            });
 
-      // Añadir leyenda
-      var legend2 = chart2.children.push(am5.Legend.new(root2, { centerX: am5.p50, x: am5.p50 }));
+                            series.data.setAll(seriesData);
+                            series.appear();
+                        }
 
-      // Obtener los datos de la nueva ruta
-      fetch("http://127.0.0.1:5000/get_kpi_estado_solicitudes")
-        .then(response => response.json())
-        .then(data => {
-          const groupedData = {};
-          const estados = new Set();
+                        // Add legend
+                        var legend = chart.children.push(am5.Legend.new(root, {
+                            centerX: am5.p50,
+                            x: am5.p50
+                        }));
+                        legend.data.setAll(chart.series.values);
 
-          // Agrupar los datos por año y estado
-          data.forEach(item => {
-            const year = item.año;
-            const estado = item.estado;
-            if (!groupedData[year]) {
-              groupedData[year] = { year: year }; // Inicializa el año
-            }
-            if (!groupedData[year][estado]) {
-              groupedData[year][estado] = 0; // Inicializa el estado
-            }
-            groupedData[year][estado] += item.cantidad; // Sumar la cantidad
-            estados.add(estado); // Agregar el estado a la lista
-          });
+                        // Add cursor
+                        var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+                            behavior: "zoomY"
+                        }));
+                        cursor.lineY.set("forceHidden", true);
+                        cursor.lineX.set("forceHidden", true);
 
-          const processedData = Object.values(groupedData);
-          yAxis2.data.setAll(processedData);
+                        // Make stuff animate on load
+                        chart.appear(1000, 100);
+                    })
+                    .catch(error => {
+                        console.error("Error fetching data:", error);
+                    });
+            });
+        }
 
-          // Crear las series para cada estado dinámicamente
-          estados.forEach(estado => {
-            makeSeries(estado, estado);
-          });
+        
+        function createVolumenSolicitudesOrigenChart(chartDivId, apiUrl, chartTitle) {
+            // Realizar la petición a la API
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Crear un diccionario para agrupar los datos por origen
+                    const groupedData = {};
 
-          // Asignar datos a las series
-          chart2.series.each(series => {
-            series.data.setAll(processedData);
-          });
+                    data.forEach(item => {
+                        if (!groupedData[item.año]) {
+                            groupedData[item.año] = {
+                                year: item.año
+                            };
+                        }
+                        groupedData[item.año][item.origen] = item.total_solicitudes;
+                    });
 
-          chart2.appear(1000, 100);
-        })
-        .catch(error => console.error("Error al obtener los datos:", error));
-    });
+                    // Convertir el diccionario a una lista para amCharts
+                    const chartData = Object.values(groupedData);
 
-    function makeSeries(name, fieldName) {
-      var series = chart2.series.push(am5xy.ColumnSeries.new(root2, {
-        name: name,
-        stacked: true, // Apilar las barras
-        xAxis: xAxis2,
-        yAxis: yAxis2,
-        baseAxis: yAxis2,
-        valueXField: fieldName,
-        categoryYField: "year"
-      }));
+                    // Crear el gráfico con amCharts
+                    am5.ready(function () {
 
-      series.columns.template.setAll({
-        tooltipText: "{name}, {categoryY}: {valueX}",
-        tooltipY: am5.percent(90)
-      });
+                        // Crear el root del gráfico
+                        var root = am5.Root.new(chartDivId);
 
-      // Hacer que las columnas aparezcan al cargar
-      series.appear();
-    }
+                        // Establecer el tema
+                        root.setThemes([am5themes_Animated.new(root)]);
 
-  </script>
+                        // Crear el gráfico XY
+                        var chart = root.container.children.push(
+                            am5xy.XYChart.new(root, {
+                                panX: false,
+                                panY: false,
+                                wheelX: "panX",
+                                wheelY: "zoomX",
+                                paddingLeft: 0,
+                                layout: root.verticalLayout
+                            })
+                        );
 
+                        // Agregar leyenda
+                        var legend = chart.children.push(
+                            am5.Legend.new(root, {
+                                centerX: am5.p50,
+                                x: am5.p50
+                            })
+                        );
+
+                        // Crear los ejes
+                        var xRenderer = am5xy.AxisRendererX.new(root, {
+                            cellStartLocation: 0.1,
+                            cellEndLocation: 0.9,
+                            minorGridEnabled: true
+                        });
+
+                        var xAxis = chart.xAxes.push(
+                            am5xy.CategoryAxis.new(root, {
+                                categoryField: "year",
+                                renderer: xRenderer,
+                                tooltip: am5.Tooltip.new(root, {})
+                            })
+                        );
+
+                        xRenderer.grid.template.setAll({
+                            location: 1
+                        });
+
+                        // Configurar los años en el eje X
+                        xAxis.data.setAll(chartData);
+
+                        var yAxis = chart.yAxes.push(
+                            am5xy.ValueAxis.new(root, {
+                                min: 0,
+                                renderer: am5xy.AxisRendererY.new(root, {
+                                    strokeOpacity: 0.1
+                                })
+                            })
+                        );
+
+                        // Función para crear una serie de barras apiladas
+                        function makeSeries(name, fieldName, stacked) {
+                            var series = chart.series.push(
+                                am5xy.ColumnSeries.new(root, {
+                                    stacked: stacked,
+                                    name: name,
+                                    xAxis: xAxis,
+                                    yAxis: yAxis,
+                                    valueYField: fieldName,
+                                    categoryXField: "year"
+                                })
+                            );
+
+                            series.columns.template.setAll({
+                                tooltipText: "{name}, {categoryX}: {valueY}",
+                                width: am5.percent(90),
+                                tooltipY: am5.percent(10)
+                            });
+                            series.data.setAll(chartData);
+
+                            // Animar la aparición de las series
+                            series.appear();
+
+                            // Etiquetas dentro de las barras
+                            series.bullets.push(function () {
+                                return am5.Bullet.new(root, {
+                                    locationY: 0.5,
+                                    sprite: am5.Label.new(root, {
+                                        text: "{valueY}",
+                                        fill: root.interfaceColors.get("alternativeText"),
+                                        centerY: am5.percent(50),
+                                        centerX: am5.percent(50),
+                                        populateText: true
+                                    })
+                                });
+                            });
+
+                            // Agregar la serie a la leyenda
+                            legend.data.push(series);
+                        }
+
+                        // Crear una serie por cada origen
+                        const orígenes = [...new Set(data.map(item => item.origen))];
+                        orígenes.forEach(origen => {
+                            makeSeries(origen, origen, true);
+                        });
+
+                        // Animar la aparición del gráfico
+                        chart.appear(1000, 100);
+
+                    }); // end am5.ready()
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+       
+        function createDistribucionEstadosChart(chartDivId, apiUrl, chartTitle) {
+            // Realizar la petición a la API
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Crear un diccionario para agrupar los datos por año
+                    const groupedData = {};
+
+                    data.forEach(item => {
+                        if (!groupedData[item.año]) {
+                            groupedData[item.año] = {
+                                year: item.año
+                            };
+                        }
+                        groupedData[item.año][item.estado] = item.total_solicitudes; // Cambiar "origen" a "estado"
+                    });
+
+                    // Convertir el diccionario a una lista para amCharts
+                    const chartData = Object.values(groupedData);
+
+                    // Crear el gráfico con amCharts
+                    am5.ready(function () {
+                        // Crear el root del gráfico
+                        var root = am5.Root.new(chartDivId);
+
+                        // Establecer el tema
+                        root.setThemes([am5themes_Animated.new(root)]);
+
+                        // Crear el gráfico XY
+                        var chart = root.container.children.push(
+                            am5xy.XYChart.new(root, {
+                                panX: false,
+                                panY: false,
+                                wheelX: "panX",
+                                wheelY: "zoomX",
+                                paddingLeft: 0,
+                                layout: root.verticalLayout
+                            })
+                        );
+
+                        // Agregar leyenda
+                        var legend = chart.children.push(
+                            am5.Legend.new(root, {
+                                centerX: am5.p50,
+                                x: am5.p50
+                            })
+                        );
+
+                        // Crear los ejes
+                        var xRenderer = am5xy.AxisRendererX.new(root, {
+                            cellStartLocation: 0.1,
+                            cellEndLocation: 0.9,
+                            minorGridEnabled: true
+                        });
+
+                        var xAxis = chart.xAxes.push(
+                            am5xy.CategoryAxis.new(root, {
+                                categoryField: "year",
+                                renderer: xRenderer,
+                                tooltip: am5.Tooltip.new(root, {})
+                            })
+                        );
+
+                        xRenderer.grid.template.setAll({
+                            location: 1
+                        });
+
+                        // Configurar los años en el eje X
+                        xAxis.data.setAll(chartData);
+
+                        var yAxis = chart.yAxes.push(
+                            am5xy.ValueAxis.new(root, {
+                                min: 0,
+                                renderer: am5xy.AxisRendererY.new(root, {
+                                    strokeOpacity: 0.1
+                                })
+                            })
+                        );
+
+                        // Función para crear una serie de barras apiladas
+                        function makeSeries(name, fieldName, stacked) {
+                            var series = chart.series.push(
+                                am5xy.ColumnSeries.new(root, {
+                                    stacked: stacked,
+                                    name: name,
+                                    xAxis: xAxis,
+                                    yAxis: yAxis,
+                                    valueYField: fieldName,
+                                    categoryXField: "year"
+                                })
+                            );
+
+                            series.columns.template.setAll({
+                                tooltipText: "{name}, {categoryX}: {valueY}",
+                                width: am5.percent(90),
+                                tooltipY: am5.percent(10)
+                            });
+                            series.data.setAll(chartData);
+
+                            // Animar la aparición de las series
+                            series.appear();
+
+                            // Etiquetas dentro de las barras
+                            series.bullets.push(function () {
+                                return am5.Bullet.new(root, {
+                                    locationY: 0.5,
+                                    sprite: am5.Label.new(root, {
+                                        text: "{valueY}",
+                                        fill: root.interfaceColors.get("alternativeText"),
+                                        centerY: am5.percent(50),
+                                        centerX: am5.percent(50),
+                                        populateText: true
+                                    })
+                                });
+                            });
+
+                            // Agregar la serie a la leyenda
+                            legend.data.push(series);
+                        }
+
+                        // Crear una serie por cada estado
+                        const estados = [...new Set(data.map(item => item.estado))]; // Cambiar "origen" a "estado"
+                        estados.forEach(estado => {
+                            makeSeries(estado, estado, true);
+                        });
+
+                        // Animar la aparición del gráfico
+                        chart.appear(1000, 100);
+                    }); // end am5.ready()
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+
+        function createTiempoTipoChart(chartDivId, apiUrl, chartTitle) {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Preparar datos agrupados por año y tipo
+                    let groupedData = {};
+                    data.forEach(item => {
+                        if (!groupedData[item.año]) {
+                            groupedData[item.año] = { year: item.año };
+                        }
+                        groupedData[item.año][item.tipo] = parseFloat(item.tiempo_promedio_resolucion);
+                    });
+
+                    let chartData = Object.values(groupedData);
+
+                    // Crear gráfico
+                    var root = am5.Root.new(chartDivId);
+                    root.setThemes([am5themes_Animated.new(root)]);
+
+                    var chart = root.container.children.push(am5xy.XYChart.new(root, {
+                        panX: false,
+                        panY: false,
+                        layout: root.verticalLayout
+                    }));
+
+                    var legend = chart.children.push(am5.Legend.new(root, {
+                        centerX: am5.p50,
+                        x: am5.p50
+                    }));
+
+                    var xRenderer = am5xy.AxisRendererX.new(root, {
+                        cellStartLocation: 0.1,
+                        cellEndLocation: 0.9
+                    });
+
+                    var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+                        categoryField: "year",
+                        renderer: xRenderer,
+                        tooltip: am5.Tooltip.new(root, {})
+                    }));
+
+                    var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                        renderer: am5xy.AxisRendererY.new(root, { strokeOpacity: 0.1 })
+                    }));
+
+                    xAxis.data.setAll(chartData);
+
+                    function makeSeries(name, fieldName) {
+                        var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+                            name: name,
+                            xAxis: xAxis,
+                            yAxis: yAxis,
+                            valueYField: fieldName,
+                            categoryXField: "year"
+                        }));
+
+                        series.columns.template.setAll({
+                            tooltipText: "{name}, {categoryX}: {valueY}",
+                            width: am5.percent(90),
+                            tooltipY: 0,
+                            strokeOpacity: 0
+                        });
+
+                        series.data.setAll(chartData);
+                        series.appear();
+                        legend.data.push(series);
+                    }
+
+                    // Crear series para cada tipo de solicitud
+                    let tipos = [...new Set(data.map(item => item.tipo))];
+                    tipos.forEach(tipo => {
+                        makeSeries(tipo, tipo);
+                    });
+
+                    chart.appear(1000, 100);
+                });
+        }
+
+
+        function createTiempoOrigen(chartDivId, apiUrl, chartTitle) {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Preparar datos agrupados por año y origen
+                    let groupedData = {};
+                    data.forEach(item => {
+                        if (!groupedData[item.año]) {
+                            groupedData[item.año] = { year: item.año };
+                        }
+                        groupedData[item.año][item.origen] = parseFloat(item.tiempo_promedio_resolucion);
+                    });
+
+                    let chartData = Object.values(groupedData);
+
+                    // Crear gráfico
+                    var root = am5.Root.new(chartDivId);
+                    root.setThemes([am5themes_Animated.new(root)]);
+
+                    var chart = root.container.children.push(am5xy.XYChart.new(root, {
+                        panX: false,
+                        panY: false,
+                        layout: root.verticalLayout
+                    }));
+
+                    var legend = chart.children.push(am5.Legend.new(root, {
+                        centerX: am5.p50,
+                        x: am5.p50
+                    }));
+
+                    var xRenderer = am5xy.AxisRendererX.new(root, {
+                        cellStartLocation: 0.1,
+                        cellEndLocation: 0.9
+                    });
+
+                    var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+                        categoryField: "year",
+                        renderer: xRenderer,
+                        tooltip: am5.Tooltip.new(root, {})
+                    }));
+
+                    var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                        renderer: am5xy.AxisRendererY.new(root, { strokeOpacity: 0.1 })
+                    }));
+
+                    xAxis.data.setAll(chartData);
+
+                    function makeSeries(name, fieldName) {
+                        var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+                            name: name,
+                            xAxis: xAxis,
+                            yAxis: yAxis,
+                            valueYField: fieldName,
+                            categoryXField: "year"
+                        }));
+
+                        series.columns.template.setAll({
+                            tooltipText: "{name}, {categoryX}: {valueY}",
+                            width: am5.percent(90),
+                            tooltipY: 0,
+                            strokeOpacity: 0
+                        });
+
+                        series.data.setAll(chartData);
+                        series.appear();
+                        legend.data.push(series);
+                    }
+
+                    // Crear series para cada origen de solicitud
+                    let origenes = [...new Set(data.map(item => item.origen))];
+                    origenes.forEach(origen => {
+                        makeSeries(origen, origen);
+                    });
+
+                    chart.appear(1000, 100);
+                });
+        }
+
+
+        function createTasaInadmitidasANuladasChart(chartDivId, apiUrl, chartTitle) {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Crear tabla HTML
+                    let chartDiv = document.getElementById(chartDivId);
+                    let table = document.createElement('table');
+                    table.style.width = "100%";
+                    table.setAttribute('border', '1');
+
+                    // Crear encabezado de la tabla
+                    let header = table.createTHead();
+                    let headerRow = header.insertRow(0);
+                    let headers = ["Año", "Total Solicitudes", "Total Inadmitidas", "Total Anuladas", "Tasa (%)", "Alerta"];
+                    headers.forEach(text => {
+                        let cell = headerRow.insertCell();
+                        cell.outerHTML = `<th>${text}</th>`;
+                    });
+
+                    // Crear cuerpo de la tabla
+                    let tbody = table.createTBody();
+                    data.forEach(item => {
+                        let row = tbody.insertRow();
+
+                        // Columna Año
+                        let cellAño = row.insertCell();
+                        cellAño.textContent = item.año;
+
+                        // Columna Total Solicitudes
+                        let cellTotalSolicitudes = row.insertCell();
+                        cellTotalSolicitudes.textContent = item.total_solicitudes;
+
+                        // Columna Total Inadmitidas
+                        let cellTotalRechazadas = row.insertCell();
+                        cellTotalRechazadas.textContent = item.total_inadmitidas;
+
+                        // Columna Total Anuladas
+                        let cellTotalAnuladas = row.insertCell();
+                        cellTotalAnuladas.textContent = item.total_anuladas;
+
+                        // Columna Tasa de Inadmitidas y Anuladas
+                        let cellTasa = row.insertCell();
+                        cellTasa.textContent = item.tasa_inadmitidas_anuladas;
+
+                        // Columna de Alerta con icono
+                        let cellAlerta = row.insertCell();
+                        let icon = document.createElement('img');
+
+                        // Determinar el color del icono basado en la tasa
+                        if (item.tasa_inadmitidas_anuladas <= 10) {
+                            icon.style.width = "50px";
+                            icon.style.height = "50px";
+                            icon.src = "https://upload.wikimedia.org/wikipedia/commons/8/83/Green_dot.svg";  // Verde
+                            icon.alt = "Verde";
+                        } else if (item.tasa_inadmitidas_anuladas <= 20) {
+                            icon.style.width = "50px";
+                            icon.style.height = "50px";
+                            icon.src = "https://upload.wikimedia.org/wikipedia/commons/archive/6/60/20160222214332%21Dot_yellow_ff4.svg";  // Amarillo
+                            icon.alt = "Amarillo";
+                        } else {
+                            icon.src = "https://upload.wikimedia.org/wikipedia/commons/archive/6/6d/20110227151635%21Red_dot.svg";  // Rojo
+                            icon.alt = "Rojo";
+                        }
+
+                        cellAlerta.appendChild(icon);
+                    });
+
+                    // Limpiar y agregar la tabla al div
+                    chartDiv.innerHTML = "";
+                    chartDiv.appendChild(table);
+                })
+                .catch(error => {
+                    console.error("Error al obtener los datos para el gráfico 6:", error);
+                });
+        }
+
+    </script>
 </body>
+
 </html>
