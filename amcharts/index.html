@@ -5,15 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Múltiples Gráficos</title>
+
     <!-- Styles -->
-    <style>
-        .chart-container {
-            width: 100%;
-            height: 500px;
-            margin-bottom: 90px;
-            /* Espacio entre gráficos */
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <!-- Resources -->
     <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
@@ -23,29 +17,189 @@
 
 <header>
     <img src="mismatica.png" alt="Firma de la empresa">
-    <h1>Mismatica Management</h1>
-  </header>
+</header>
 
 <body>
     <!-- HTML -->
-    <div id="chartdiv1" class="chart-container"></div>
-    <div id="chartdiv2" class="chart-container"></div>
-    <div id="chartdiv3" class="chart-container"></div>
-    <div id="chartdiv4" class="chart-container"></div>
-    <div id="chartdiv5" class="chart-container"></div>
-    <div id="chartdiv6" class="chart-container"></div>
+
+    <h2 class="titulo-dashboard">Dashboard de solicitudes de ciudadanos</h2>
+
+
+    <div class="chart-section">
+        <h3 class="chart-title">Tasa de Resolución por Tipo</h3>
+        <div id="chartdiv1" class="chart-container"></div>
+    </div>
+
+    <div class="chart-section">
+        <h3 class="chart-title">Volumen de solicitudes por origen</h3>
+        <div id="chartdiv2" class="chart-container"></div>
+    </div>
+
+    <div class="chart-section">
+        <h3 class="chart-title">Distribución por estado</h3>
+        <div id="chartdiv3" class="chart-container"></div>
+    </div>
+
+    <div class="chart-section">
+        <h3 class="chart-title">Tiempo promedio de resolución por tipo (Días)</h3>
+        <div id="chartdiv4" class="chart-container"></div>
+    </div>
+
+    <div class="chart-section">
+        <h3 class="chart-title">Tiempo promedio por origen (Días) </h3>
+        <div id="chartdiv5" class="chart-container"></div>
+    </div>
+
+    <div class="chart-section">
+        <h3 class="chart-title">Tasa inadmitidas-anuladas</h3>
+        <div id="chartdiv6" class="table-container"></div>
+    </div>
+
+    <!-- CSS para los títulos y gráficos -->
+
+    <style>
+        .titulo-dashboard {
+            text-align: center;
+            /* Centra el texto horizontalmente */
+            font-family: 'Montserrat', sans-serif;
+            /* Cambia la fuente por la que prefieras */
+            font-size: 24px;
+            /* Ajusta el tamaño de la fuente */
+            color: #333;
+            /* Define el color del texto */
+            background-color: #f2f2f2;
+            /* Añade un fondo si lo deseas */
+            padding: 10px 20px;
+            /* Agrega espacio interno */
+            border-radius: 5px;
+            /* Redondea las esquinas */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            /* Agrega una sombra */
+        }
+
+        .chart-container {
+            width: 80%;
+            /* o cualquier ancho que desees */
+            height: 800px;
+            /* altura del gráfico */
+            margin: 20px auto;
+            /* centra horizontalmente */
+            border: 1px solid #ccc;
+            /* Opcional: borde para visualización */
+            background-color: #f9f9f9;
+            /* Opcional: fondo para visualización */
+        }
+
+        .chart-section {
+            display: flex;
+            /* Activa Flexbox */
+            justify-content: center;
+            /* Centra horizontalmente */
+            align-items: center;
+            /* Centra verticalmente */
+            flex-direction: column;
+            /* Mantiene los elementos en columna */
+            margin: 20px 0;
+            /* Espacio entre secciones */
+        }
+
+        .chart-title {
+            font-family: 'Arial', sans-serif;
+            font-size: 24px;
+            color: #4A90E2;
+            /* Color azul elegante */
+            text-align: center;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            /* Espaciado de letras */
+        }
+    </style>
+
+    <style>
+        .table-container {
+            width: 80%;
+            /* Ajusta el ancho según tus necesidades */
+            min-height: auto;
+            /* Se ajusta dinámicamente a la altura de la tabla */
+            margin: 20px auto;
+            /* Centramos el contenedor horizontalmente */
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-table {
+            width: 100%;
+            /* Ocupar todo el ancho disponible */
+            max-width: 100%;
+            /* Limitar a 100% para evitar desbordamiento */
+            border-collapse: collapse;
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+            /* Aumentar el tamaño de la fuente si lo deseas */
+            margin-bottom: 20px;
+        }
+
+        .custom-table th,
+        .custom-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .custom-table th {
+            background-color: #f2f2f2;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 18px;
+            /* Aumentar el tamaño del encabezado */
+        }
+
+        .custom-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .custom-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .alert-green {
+            color: #28a745;
+            font-size: 24px;
+        }
+
+        .alert-yellow {
+            color: #ffc107;
+            font-size: 24px;
+        }
+
+        .alert-red {
+            color: #dc3545;
+            font-size: 24px;
+        }
+
+        .custom-table td i:hover {
+            transform: scale(1.2);
+            transition: transform 0.2s ease-in-out;
+        }
+    </style>
 
     <!-- Chart code -->
     <script>
 
         // Crear gráficos
-        createTasaResolucionTipoChart("chartdiv1", "http://localhost:5000/get_tasa_resolucion_por_tipo", "Tasa de Resolución por Tipo");
+        createTasaResolucionTipoChart("chartdiv1", "http://localhost:3306/get_tasa_resolucion_por_tipo", "Tasa de Resolución por Tipo");
         createVolumenSolicitudesOrigenChart("chartdiv2", "http://localhost:5000/get_volumen_solicitudes_por_origen", "Volumen de solicitudes por origen");
         createDistribucionEstadosChart("chartdiv3", "http://localhost:5000/get_distribucion_estados", "Distribución por estado");
         createTiempoTipoChart("chartdiv4", "http://localhost:5000/get_tiempo_promedio_resolucion", "Tiempo promedio de resolución por tipo");
         createTiempoOrigen("chartdiv5", "http://localhost:5000/get_tiempo_promedio_resolucion", "Tiempo promedio de  por origen");
         createTasaInadmitidasANuladasChart("chartdiv6", "http://localhost:5000/get_tasa_inadmitidas_anuladas", "Tasa inadmitidas-anuladas");
-    
+
         function createTasaResolucionTipoChart(chartDivId, dataUrl, chartName) {
             am5.ready(function () {
                 // Create root element
@@ -152,8 +306,6 @@
                     });
             });
         }
-
-        
         function createVolumenSolicitudesOrigenChart(chartDivId, apiUrl, chartTitle) {
             // Realizar la petición a la API
             fetch(apiUrl)
@@ -174,7 +326,6 @@
                     // Convertir el diccionario a una lista para amCharts
                     const chartData = Object.values(groupedData);
 
-                    // Crear el gráfico con amCharts
                     am5.ready(function () {
 
                         // Crear el root del gráfico
@@ -186,11 +337,9 @@
                         // Crear el gráfico XY
                         var chart = root.container.children.push(
                             am5xy.XYChart.new(root, {
-                                panX: false,
-                                panY: false,
-                                wheelX: "panX",
-                                wheelY: "zoomX",
-                                paddingLeft: 0,
+                                panX: true,   // Permitir desplazamiento horizontal
+                                wheelX: "panX",  // Permitir zoom en el eje X
+                                wheelY: "zoomX", // Zoom en el eje Y con la rueda del mouse
                                 layout: root.verticalLayout
                             })
                         );
@@ -205,9 +354,9 @@
 
                         // Crear los ejes
                         var xRenderer = am5xy.AxisRendererX.new(root, {
-                            cellStartLocation: 0.1,
-                            cellEndLocation: 0.9,
-                            minorGridEnabled: true
+                            minGridDistance: 30,
+                            cellStartLocation: 0.1,   // Ajustar espaciado entre categorías en el eje X
+                            cellEndLocation: 0.9
                         });
 
                         var xAxis = chart.xAxes.push(
@@ -219,26 +368,32 @@
                         );
 
                         xRenderer.grid.template.setAll({
-                            location: 1
+                            location: 0.5
                         });
 
-                        // Configurar los años en el eje X
                         xAxis.data.setAll(chartData);
 
+                        // Configurar el eje Y
                         var yAxis = chart.yAxes.push(
                             am5xy.ValueAxis.new(root, {
                                 min: 0,
                                 renderer: am5xy.AxisRendererY.new(root, {
-                                    strokeOpacity: 0.1
+                                    minGridDistance: 50,  // Separar más los valores en el eje Y
+                                    strokeOpacity: 0.2  // Transparencia en las líneas de la cuadrícula
                                 })
                             })
                         );
 
-                        // Función para crear una serie de barras apiladas
+                        // Transformación personalizada de los valores para hacer más visibles los pequeños valores
+                        function transformValue(value) {
+                            return Math.sqrt(value); // Aplicar una transformación de raíz cuadrada
+                        }
+
+                        // Función para crear series de barras apiladas
                         function makeSeries(name, fieldName, stacked) {
                             var series = chart.series.push(
                                 am5xy.ColumnSeries.new(root, {
-                                    stacked: stacked,
+                                    stacked: stacked,  // Activar el apilado
                                     name: name,
                                     xAxis: xAxis,
                                     yAxis: yAxis,
@@ -247,22 +402,29 @@
                                 })
                             );
 
+                            // Aplicar la transformación a los datos antes de asignarlos a la serie
+                            let transformedData = chartData.map(item => {
+                                let newItem = { ...item };
+                                newItem[fieldName] = transformValue(item[fieldName]);  // Transformar el valor
+                                return newItem;
+                            });
+
+                            series.data.setAll(transformedData);
+
                             series.columns.template.setAll({
                                 tooltipText: "{name}, {categoryX}: {valueY}",
-                                width: am5.percent(90),
-                                tooltipY: am5.percent(10)
+                                width: am5.percent(70),  // Ajustar el ancho de las barras
                             });
-                            series.data.setAll(chartData);
 
-                            // Animar la aparición de las series
+                            // Animar las barras al aparecer
                             series.appear();
 
-                            // Etiquetas dentro de las barras
+                            // Añadir etiquetas con el valor original dentro de las barras
                             series.bullets.push(function () {
                                 return am5.Bullet.new(root, {
                                     locationY: 0.5,
                                     sprite: am5.Label.new(root, {
-                                        text: "{valueY}",
+                                        text: "{valueY}",  // Mostrar el valor real, sin transformación
                                         fill: root.interfaceColors.get("alternativeText"),
                                         centerY: am5.percent(50),
                                         centerX: am5.percent(50),
@@ -271,7 +433,7 @@
                                 });
                             });
 
-                            // Agregar la serie a la leyenda
+                            // Añadir la serie a la leyenda
                             legend.data.push(series);
                         }
 
@@ -281,15 +443,29 @@
                             makeSeries(origen, origen, true);
                         });
 
+                        // Añadir la barra de desplazamiento en el eje X
+                        chart.set("scrollbarX", am5.Scrollbar.new(root, {
+                            orientation: "horizontal"
+                        }));
+
                         // Animar la aparición del gráfico
                         chart.appear(1000, 100);
 
                     }); // end am5.ready()
+
+
+
+
+
+
                 })
-                .catch(error => console.error('Error fetching data:', error));
+                .catch(error => {
+                    console.error("Error al obtener los datos: ", error);
+                });
         }
 
-       
+
+
         function createDistribucionEstadosChart(chartDivId, apiUrl, chartTitle) {
             // Realizar la petición a la API
             fetch(apiUrl)
@@ -304,14 +480,14 @@
                                 year: item.año
                             };
                         }
-                        groupedData[item.año][item.estado] = item.total_solicitudes; // Cambiar "origen" a "estado"
+                        groupedData[item.año][item.estado] = item.total_solicitudes;
                     });
 
                     // Convertir el diccionario a una lista para amCharts
                     const chartData = Object.values(groupedData);
 
-                    // Crear el gráfico con amCharts
                     am5.ready(function () {
+
                         // Crear el root del gráfico
                         var root = am5.Root.new(chartDivId);
 
@@ -321,11 +497,9 @@
                         // Crear el gráfico XY
                         var chart = root.container.children.push(
                             am5xy.XYChart.new(root, {
-                                panX: false,
-                                panY: false,
-                                wheelX: "panX",
-                                wheelY: "zoomX",
-                                paddingLeft: 0,
+                                panX: true,   // Permitir desplazamiento horizontal
+                                wheelX: "panX",  // Permitir zoom en el eje X
+                                wheelY: "zoomX", // Zoom en el eje Y con la rueda del mouse
                                 layout: root.verticalLayout
                             })
                         );
@@ -340,9 +514,9 @@
 
                         // Crear los ejes
                         var xRenderer = am5xy.AxisRendererX.new(root, {
-                            cellStartLocation: 0.1,
-                            cellEndLocation: 0.9,
-                            minorGridEnabled: true
+                            minGridDistance: 30,
+                            cellStartLocation: 0.1,   // Ajustar espaciado entre categorías en el eje X
+                            cellEndLocation: 0.9
                         });
 
                         var xAxis = chart.xAxes.push(
@@ -354,26 +528,32 @@
                         );
 
                         xRenderer.grid.template.setAll({
-                            location: 1
+                            location: 0.5
                         });
 
-                        // Configurar los años en el eje X
                         xAxis.data.setAll(chartData);
 
+                        // Configurar el eje Y
                         var yAxis = chart.yAxes.push(
                             am5xy.ValueAxis.new(root, {
                                 min: 0,
                                 renderer: am5xy.AxisRendererY.new(root, {
-                                    strokeOpacity: 0.1
+                                    minGridDistance: 50,  // Separar más los valores en el eje Y
+                                    strokeOpacity: 0.2  // Transparencia en las líneas de la cuadrícula
                                 })
                             })
                         );
 
-                        // Función para crear una serie de barras apiladas
+                        // Transformación personalizada de los valores para hacer más visibles los pequeños valores
+                        function transformValue(value) {
+                            return Math.sqrt(value); // Aplicar una transformación de raíz cuadrada
+                        }
+
+                        // Función para crear series de barras apiladas
                         function makeSeries(name, fieldName, stacked) {
                             var series = chart.series.push(
                                 am5xy.ColumnSeries.new(root, {
-                                    stacked: stacked,
+                                    stacked: stacked,  // Activar el apilado
                                     name: name,
                                     xAxis: xAxis,
                                     yAxis: yAxis,
@@ -382,22 +562,29 @@
                                 })
                             );
 
+                            // Aplicar la transformación a los datos antes de asignarlos a la serie
+                            let transformedData = chartData.map(item => {
+                                let newItem = { ...item };
+                                newItem[fieldName] = transformValue(item[fieldName]);  // Transformar el valor
+                                return newItem;
+                            });
+
+                            series.data.setAll(transformedData);
+
                             series.columns.template.setAll({
                                 tooltipText: "{name}, {categoryX}: {valueY}",
-                                width: am5.percent(90),
-                                tooltipY: am5.percent(10)
+                                width: am5.percent(70),  // Ajustar el ancho de las barras
                             });
-                            series.data.setAll(chartData);
 
-                            // Animar la aparición de las series
+                            // Animar las barras al aparecer
                             series.appear();
 
-                            // Etiquetas dentro de las barras
+                            // Añadir etiquetas con el valor original dentro de las barras
                             series.bullets.push(function () {
                                 return am5.Bullet.new(root, {
                                     locationY: 0.5,
                                     sprite: am5.Label.new(root, {
-                                        text: "{valueY}",
+                                        text: "{valueY}",  // Mostrar el valor real, sin transformación
                                         fill: root.interfaceColors.get("alternativeText"),
                                         centerY: am5.percent(50),
                                         centerX: am5.percent(50),
@@ -406,22 +593,31 @@
                                 });
                             });
 
-                            // Agregar la serie a la leyenda
+                            // Añadir la serie a la leyenda
                             legend.data.push(series);
                         }
 
                         // Crear una serie por cada estado
-                        const estados = [...new Set(data.map(item => item.estado))]; // Cambiar "origen" a "estado"
+                        const estados = [...new Set(data.map(item => item.estado))];
                         estados.forEach(estado => {
                             makeSeries(estado, estado, true);
                         });
 
+                        // Añadir la barra de desplazamiento en el eje X
+                        chart.set("scrollbarX", am5.Scrollbar.new(root, {
+                            orientation: "horizontal"
+                        }));
+
                         // Animar la aparición del gráfico
                         chart.appear(1000, 100);
+
                     }); // end am5.ready()
                 })
-                .catch(error => console.error('Error fetching data:', error));
+                .catch(error => {
+                    console.error("Error al obtener los datos: ", error);
+                });
         }
+
 
 
         function createTiempoTipoChart(chartDivId, apiUrl, chartTitle) {
@@ -466,7 +662,7 @@
                     }));
 
                     var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-                        renderer: am5xy.AxisRendererY.new(root, { strokeOpacity: 0.1 })
+                        renderer: am5xy.AxisRendererY.new(root, { strokeOpacity: 0.9 })
                     }));
 
                     xAxis.data.setAll(chartData);
@@ -589,8 +785,7 @@
                     // Crear tabla HTML
                     let chartDiv = document.getElementById(chartDivId);
                     let table = document.createElement('table');
-                    table.style.width = "100%";
-                    table.setAttribute('border', '1');
+                    table.classList.add('custom-table');
 
                     // Crear encabezado de la tabla
                     let header = table.createTHead();
@@ -624,25 +819,21 @@
 
                         // Columna Tasa de Inadmitidas y Anuladas
                         let cellTasa = row.insertCell();
-                        cellTasa.textContent = item.tasa_inadmitidas_anuladas;
+                        cellTasa.textContent = item.tasa_inadmitidas_anuladas + '%';
 
-                        // Columna de Alerta con icono
+                        // Columna de Alerta con icono de Font Awesome
                         let cellAlerta = row.insertCell();
-                        let icon = document.createElement('img');
+                        let icon = document.createElement('i');  // Crear el elemento de icono
 
-                        // Determinar el color del icono basado en la tasa
+                        // Determinar el icono basado en la tasa
                         if (item.tasa_inadmitidas_anuladas <= 10) {
-                            icon.style.width = "50px";
-                            icon.style.height = "50px";
-                            icon.src = "https://upload.wikimedia.org/wikipedia/commons/8/83/Green_dot.svg";  // Verde
+                            icon.classList.add('fas', 'fa-check-circle', 'alert-green');  // Verde
                             icon.alt = "Verde";
                         } else if (item.tasa_inadmitidas_anuladas <= 20) {
-                            icon.style.width = "50px";
-                            icon.style.height = "50px";
-                            icon.src = "https://upload.wikimedia.org/wikipedia/commons/archive/6/60/20160222214332%21Dot_yellow_ff4.svg";  // Amarillo
+                            icon.classList.add('fas', 'fa-exclamation-circle', 'alert-yellow');  // Amarillo
                             icon.alt = "Amarillo";
                         } else {
-                            icon.src = "https://upload.wikimedia.org/wikipedia/commons/archive/6/6d/20110227151635%21Red_dot.svg";  // Rojo
+                            icon.classList.add('fas', 'fa-times-circle', 'alert-red');  // Rojo
                             icon.alt = "Rojo";
                         }
 

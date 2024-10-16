@@ -15,7 +15,8 @@ services:
 
   setup_db:
     build: .
-    command: ["python", "setup_db.py"]
+    command: >
+      /bin/sh -c "python setup_db.py && python ETL/load_processed_data.py && python app.py"
     networks:
       - my_network
 

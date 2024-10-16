@@ -1,10 +1,11 @@
 import pandas as pd
 import mysql.connector
 from mysql.connector import Error
+import time
 
 # Configuración de conexión a MySQL
 DB_CONFIG = {
-    'host': 'localhost',
+    'host': 'mysql_db',
     'user': 'user',
     'password': 'password',
     'database': 'data_db'
@@ -168,24 +169,33 @@ def main():
     }, inplace=True)
     df.dropna(inplace=True)
 
-    try:
-        # Conectar a la base de datos
-        connection = mysql.connector.connect(**DB_CONFIG)
-        if connection.is_connected():
-            cursor = connection.cursor()
-            create_tables(cursor)
-            insert_requests(cursor, df)
-            calculate_kpis(cursor)
+    connection = None
+    max_retries = 5  # Máximo número de reintentos
+    retries = 0
 
-            # Confirmar los cambios
-            connection.commit()
+    while retries < max_retries:
+        try:
+            # Intentar conectar a la base de datos
+            connection = mysql.connector.connect(**DB_CONFIG)
+            if connection.is_connected():
+                cursor = connection.cursor()
+                create_tables(cursor)
+                insert_requests(cursor, df)
+                calculate_kpis(cursor)
 
-    except Error as e:
-        print(f"Error al conectar a MySQL: {e}")
-    finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
+                # Confirmar los cambios
+                connection.commit()
+                print("Conexión exitosa y datos insertados")
+                break  # Salir del bucle si la conexión es exitosa
+        except Error as e:
+            print(f"Error al conectar a MySQL: {e}")
+            retries += 1
+            print(f"Reintentando en 20 segundos... ({retries}/{max_retries})")
+            time.sleep(20)  # Esperar 20 segundos antes de intentar nuevamente
+        finally:
+            if connection and connection.is_connected():
+                cursor.close()
+                connection.close()
 
 if __name__ == "__main__":
     main()

@@ -1,3 +1,7 @@
 pymysql
 sqlalchemy
 cryptography
+pandas
+mysql-connector-python
+Flask
+flask-cors
