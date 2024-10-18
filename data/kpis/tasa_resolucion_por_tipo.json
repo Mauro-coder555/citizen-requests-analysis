@@ -1,0 +1,73 @@
+{
+"tasa_resolucion_por_tipo": [
+	{
+		"año" : 2023,
+		"tipo" : "Queja",
+		"total_solicitudes" : 749,
+		"solicitudes_resueltas" : 635,
+		"tasa_resolucion" : 84.78
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Sugerencia Interna",
+		"total_solicitudes" : 17,
+		"solicitudes_resueltas" : 14,
+		"tasa_resolucion" : 82.35
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Sugerencia",
+		"total_solicitudes" : 125,
+		"solicitudes_resueltas" : 104,
+		"tasa_resolucion" : 83.20
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Sugerencia",
+		"total_solicitudes" : 144,
+		"solicitudes_resueltas" : 116,
+		"tasa_resolucion" : 80.56
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Queja",
+		"total_solicitudes" : 895,
+		"solicitudes_resueltas" : 795,
+		"tasa_resolucion" : 88.83
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Sugerencia Interna",
+		"total_solicitudes" : 17,
+		"solicitudes_resueltas" : 12,
+		"tasa_resolucion" : 70.59
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Sugerencia",
+		"total_solicitudes" : 183,
+		"solicitudes_resueltas" : 142,
+		"tasa_resolucion" : 77.60
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Queja",
+		"total_solicitudes" : 906,
+		"solicitudes_resueltas" : 708,
+		"tasa_resolucion" : 78.15
+	},
+	{
+		"año" : 2020,
+		"tipo" : "Queja",
+		"total_solicitudes" : 703,
+		"solicitudes_resueltas" : 552,
+		"tasa_resolucion" : 78.52
+	},
+	{
+		"año" : 2020,
+		"tipo" : "Sugerencia",
+		"total_solicitudes" : 159,
+		"solicitudes_resueltas" : 108,
+		"tasa_resolucion" : 67.92
+	}
+]}

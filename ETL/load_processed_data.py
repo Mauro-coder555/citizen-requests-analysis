@@ -148,6 +148,15 @@ def calculate_kpis(cursor):
         GROUP BY año;
     ''')
 
+def truncate_tables(cursor):
+    cursor.execute('TRUNCATE TABLE solicitudes;')
+    cursor.execute('TRUNCATE TABLE tasa_resolucion_por_tipo;')
+    cursor.execute('TRUNCATE TABLE volumen_solicitudes_por_origen;')
+    cursor.execute('TRUNCATE TABLE distribucion_estados;')
+    cursor.execute('TRUNCATE TABLE tiempo_promedio_resolucion;')
+    cursor.execute('TRUNCATE TABLE tasa_inadmitidas_anuladas;')
+
+
 def main():
     # Leer el archivo CSV con los datos de solicitudes
     df = pd.read_csv('data/requests.csv', sep=';')
@@ -180,6 +189,7 @@ def main():
             if connection.is_connected():
                 cursor = connection.cursor()
                 create_tables(cursor)
+                truncate_tables(cursor)
                 insert_requests(cursor, df)
                 calculate_kpis(cursor)
 

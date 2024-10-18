@@ -7,10 +7,10 @@ CORS(app)
 
 # Conexión a la base de datos (esto puede ir en una función si prefieres)
 config = {
-    'user': 'user',          # Cambia por tu usuario de MySQL
-    'password': 'password',   # Cambia por tu contraseña de MySQL
-    'host': 'mysql_db',      # Cambia si tu servidor está en otro lugar
-    'database': 'data_db'     # Cambia por el nombre de tu base de datos
+    'user': 'user',
+    'password': 'password',
+    'host': 'mysql_db',
+    'database': 'data_db'
 }
 
 def get_data_from_db(query):

@@ -4,10 +4,10 @@ from sqlalchemy.exc import OperationalError
 
 # Configuración de la conexión a MySQL usando SQLAlchemy
 DB_CONFIG = {
-    'host': 'mysql_db',  # El nombre del servicio en Docker Compose
-    'user': 'user',  # Este debe ser 'MYSQL_USER' de docker-compose.yml
-    'password': 'password',  # Este debe ser 'MYSQL_PASSWORD'
-    'database': 'data_db'  # Este debe ser 'MYSQL_DATABASE'
+    'host': 'mysql_db', 
+    'user': 'user',  
+    'password': 'password',
+    'database': 'data_db'
 }
 
 # Definir la URL de conexión usando la configuración

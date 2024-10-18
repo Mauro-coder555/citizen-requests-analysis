@@ -1,68 +1,94 @@
-# Proyecto: Análisis de Solicitudes y KPIs con MySQL, ETL y Gráficos AMCharts
+# 📊 Proyecto: Análisis de Solicitudes y KPIs con MySQL, ETL y Gráficos AMCharts
 
-Este proyecto tiene como objetivo procesar un conjunto de solicitudes de servicios públicos, almacenarlas en una base de datos MySQL y generar indicadores clave de rendimiento (KPIs) utilizando un flujo de ETL. Los resultados se visualizan utilizando gráficos interactivos con **AMCharts**.
+Este proyecto tiene como objetivo procesar un conjunto de solicitudes de servicios públicos, almacenarlas en una base de datos MySQL y generar indicadores clave de rendimiento (KPIs) utilizando un flujo de ETL. Los resultados se visualizan con gráficos interactivos usando **AMCharts**.
 
-## Índice
+## 🗂️ Índice
 
 1. [Descripción del Proyecto](#descripción-del-proyecto)
-2. [Estructura del Proyecto](#estructura-del-proyecto)
-3. [Instalación y Configuración](#instalación-y-configuración)
-4. [Ejecución del Proyecto](#ejecución-del-proyecto)
-5. [Visualización de Resultados](#visualización-de-resultados)
+2. [Tecnologías Utilizadas](#tecnologías-utilizadas)
+3. [Estructura del Proyecto](#estructura-del-proyecto)
+4. [Instalación y Configuración](#instalación-y-configuración)
+5. [Ejecución del Proyecto](#ejecución-del-proyecto)
+6. [Visualización de Resultados](#visualización-de-resultados)
 
-## Descripción del Proyecto
+---
 
-El proyecto está compuesto por varios componentes:
-- **ETL**: Proceso de Extracción, Transformación y Carga de datos desde un archivo CSV hacia una base de datos MySQL.
+## 📄 Descripción del Proyecto
+
+El proyecto incluye varios componentes:
+
+- **ETL**: Proceso de Extracción, Transformación y Carga (ETL) de datos desde un archivo CSV hacia una base de datos MySQL.
 - **Base de Datos**: MySQL se utiliza para almacenar los datos procesados y calcular KPIs.
-- **Visualización**: Se usan gráficos interactivos de AMCharts para mostrar los KPIs generados.
-- **Docker**: El entorno se ejecuta en contenedores Docker, lo que facilita la reproducción y configuración del proyecto.
+- **Visualización**: Se emplean gráficos interactivos con **AMCharts** para mostrar los KPIs generados.
+- **Docker**: Todos los servicios se ejecutan en contenedores Docker para facilitar la configuración y la portabilidad.
 
-## Estructura del Proyecto
+---
 
-El proyecto se organiza de la siguiente manera:
+## 🛠️ Tecnologías utilizadas
+
+- ![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white)
+- ![MySQL](https://img.shields.io/badge/-MySQL-4479A1?logo=mysql&logoColor=white)
+- ![Docker](https://img.shields.io/badge/-Docker-2496ED?logo=docker&logoColor=white)
+- ![AMCharts](https://img.shields.io/badge/-AMCharts-FF6F61?logo=amcharts&logoColor=white)
+
+---
+
+## 🗂️ Estructura del Proyecto
+
+El proyecto está organizado de la siguiente manera:
 
 | Archivo                | Descripción                                                                                           |
 |------------------------|-------------------------------------------------------------------------------------------------------|
 | `docker-compose.yml`    | Define los servicios necesarios: MySQL y el entorno Python para el proceso ETL.                       |
 | `Dockerfile`            | Imagen de Docker para el entorno Python que incluye la instalación de dependencias.                   |
-| `setup_db.py`           | Script que espera la disponibilidad de MySQL, configura la base de datos.     |
-| `etl_process.py`        | Realiza el procesamiento de datos desde el CSV, crea tablas en la base mysql, inserta los datos y calcula KPIs.        |
+| `setup_db.py`           | Script que configura la base de datos MySQL.                            |
+| `ETL/load_processed_data.py`        | Realiza el procesamiento de datos desde el CSV, crea tablas en MySQL, inserta los datos y calcula KPIs.|
 | `app.py`                | Sirve los datos de la base de datos a la interfaz gráfica para la visualización en AMCharts.          |
-| `amcharts/index.html`            | Página principal que contiene los gráficos interactivos generados con AMCharts.                      |
-| `data/requests.csv`     | Archivo CSV origen que contiene las solicitudes de servicio público.     |
+| `amcharts/index.html`   | Página principal que contiene los gráficos interactivos generados con AMCharts.                      |
+| `data/requests.csv`     | Archivo CSV origen que contiene las solicitudes de ciudanos.                                         |
 
+---
 
+## ⚙️ Instalación y Configuración
 
-## Instalación y Configuración
+Ejecutar los siguientes comandos:
 
-1. Clona el repositorio:
    ```bash
    git clone https://github.com/Mauro-coder555/citizen-requests-analysis
-   cd https://github.com/Mauro-coder555/citizen-requests-analysis
-Asegúrate de tener Docker y Docker Compose instalados en tu sistema.
+   cd citizen-requests-analysis
+   docker-compose build
+   ```
 
-Levanta los servicios:
-docker-compose up
+## ▶️ Ejecución del Proyecto
 
-## Ejecución del Proyecto
+El proceso completo de ETL y generación de KPIs se automatiza mediante Docker.
 
-El proceso completo de ETL y generación de KPIs se automatiza mediante Docker. Una vez que los contenedores estén en ejecución:
+Para iniciar los contenedores corremos el comando:
 
-    El archivo requests.csv es procesado y cargado en la base de datos MySQL.
-    Se calculan diversos KPIs a partir de los datos y se almacenan en tablas de la base de datos.
-    Los datos son servidos a la aplicación web con AMCharts para su visualización.
+   ```bash
+   docker-compose up
+   ```
 
-## Visualización de Resultados
+Una vez que los contenedores estén en ejecución:
 
-Una vez que todos los servicios están en marcha, accede al archivo index.html en la carpeta amcharts para ver los gráficos interactivos que muestran los KPIs calculados.
+- El archivo requests.csv es procesado y cargado en la base de datos MySQL.
+- Se calculan diversos KPIs a partir de los datos y se almacenan en tablas de la base de datos.
+- Los datos son servidos a la aplicación web con AMCharts para su visualización.
+
+## 📊 Visualización de Resultados
+
+Una vez que todos los servicios están en marcha, accede al archivo *index.html* en la carpeta amcharts para ver los gráficos interactivos que muestran los KPIs calculados.
 
 Los KPIs generados incluyen:
 
-    Tasa de resolución por tipo de solicitud.
-    Volumen de solicitudes por origen.
-    Distribución de estados de las solicitudes.
-    Tiempo promedio de resolución por tipo y origen.
-    Tasa de solicitudes inadmitidas o anuladas.
+- Tasa de resolución por tipo de solicitud.
+- Volumen de solicitudes por origen.
+- Distribución de estados de las solicitudes.
+- Tiempo promedio de resolución por tipo y origen.
+- Tasa de solicitudes inadmitidas o anuladas.
+
+---
 
 ¡Gracias por revisar el proyecto! No dudes en contactarme para más información o consultas.
+
+<img src="amcharts/mismatica.jpg" alt="Logo de la empresa" width="500" height="500">

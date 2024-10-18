@@ -1,0 +1,303 @@
+{
+"tiempo_promedio_resolucion": [
+	{
+		"año" : 2023,
+		"tipo" : "Queja",
+		"origen" : "LIBRO",
+		"tiempo_promedio_resolucion" : 28.25
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Queja",
+		"origen" : "Servicio 012",
+		"tiempo_promedio_resolucion" : 28.26
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Sugerencia Interna",
+		"origen" : "WEB",
+		"tiempo_promedio_resolucion" : 25.42
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Queja",
+		"origen" : "WEB",
+		"tiempo_promedio_resolucion" : 27.41
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Queja",
+		"origen" : "ESCRITO",
+		"tiempo_promedio_resolucion" : 27.34
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Queja",
+		"origen" : "OAMR",
+		"tiempo_promedio_resolucion" : 27.28
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Sugerencia",
+		"origen" : "WEB",
+		"tiempo_promedio_resolucion" : 27.62
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Sugerencia",
+		"origen" : "OAMR",
+		"tiempo_promedio_resolucion" : 14.00
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Sugerencia",
+		"origen" : "Servicio 012",
+		"tiempo_promedio_resolucion" : 30.91
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Queja",
+		"origen" : "BUZON",
+		"tiempo_promedio_resolucion" : 20.60
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Sugerencia",
+		"origen" : "LIBRO",
+		"tiempo_promedio_resolucion" : 23.83
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Sugerencia",
+		"origen" : "ESCRITO",
+		"tiempo_promedio_resolucion" : 25.20
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Sugerencia",
+		"origen" : "BUZON",
+		"tiempo_promedio_resolucion" : 23.00
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Sugerencia Interna",
+		"origen" : "ESCRITO",
+		"tiempo_promedio_resolucion" : 20.00
+	},
+	{
+		"año" : 2023,
+		"tipo" : "Sugerencia Interna",
+		"origen" : "BUZON",
+		"tiempo_promedio_resolucion" : 28.00
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Queja",
+		"origen" : "OAMR",
+		"tiempo_promedio_resolucion" : 27.90
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Queja",
+		"origen" : "LIBRO",
+		"tiempo_promedio_resolucion" : 26.53
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Queja",
+		"origen" : "WEB",
+		"tiempo_promedio_resolucion" : 28.02
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Queja",
+		"origen" : "ESCRITO",
+		"tiempo_promedio_resolucion" : 27.52
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Queja",
+		"origen" : "Servicio 012",
+		"tiempo_promedio_resolucion" : 27.40
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Sugerencia",
+		"origen" : "Servicio 012",
+		"tiempo_promedio_resolucion" : 23.44
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Sugerencia",
+		"origen" : "WEB",
+		"tiempo_promedio_resolucion" : 29.20
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Sugerencia",
+		"origen" : "ESCRITO",
+		"tiempo_promedio_resolucion" : 31.00
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Sugerencia",
+		"origen" : "LIBRO",
+		"tiempo_promedio_resolucion" : 25.40
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Sugerencia Interna",
+		"origen" : "WEB",
+		"tiempo_promedio_resolucion" : 30.27
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Queja",
+		"origen" : "BUZON",
+		"tiempo_promedio_resolucion" : 25.00
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Sugerencia",
+		"origen" : "BUZON",
+		"tiempo_promedio_resolucion" : 29.00
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Sugerencia",
+		"origen" : "OAMR",
+		"tiempo_promedio_resolucion" : 27.00
+	},
+	{
+		"año" : 2022,
+		"tipo" : "Sugerencia Interna",
+		"origen" : "BUZON",
+		"tiempo_promedio_resolucion" : 50.00
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Sugerencia",
+		"origen" : "Servicio 012",
+		"tiempo_promedio_resolucion" : 29.03
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Queja",
+		"origen" : "ESCRITO",
+		"tiempo_promedio_resolucion" : 26.78
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Queja",
+		"origen" : "WEB",
+		"tiempo_promedio_resolucion" : 27.08
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Queja",
+		"origen" : "Servicio 012",
+		"tiempo_promedio_resolucion" : 28.75
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Sugerencia",
+		"origen" : "WEB",
+		"tiempo_promedio_resolucion" : 24.16
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Queja",
+		"origen" : "LIBRO",
+		"tiempo_promedio_resolucion" : 30.07
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Queja",
+		"origen" : "OAMR",
+		"tiempo_promedio_resolucion" : 25.95
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Queja",
+		"origen" : "BUZON",
+		"tiempo_promedio_resolucion" : 20.25
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Sugerencia",
+		"origen" : "LIBRO",
+		"tiempo_promedio_resolucion" : 19.13
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Sugerencia",
+		"origen" : "ESCRITO",
+		"tiempo_promedio_resolucion" : 22.57
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Sugerencia",
+		"origen" : "BUZON",
+		"tiempo_promedio_resolucion" : 29.00
+	},
+	{
+		"año" : 2021,
+		"tipo" : "Queja",
+		"origen" : "FAX",
+		"tiempo_promedio_resolucion" : 28.00
+	},
+	{
+		"año" : 2020,
+		"tipo" : "Queja",
+		"origen" : "ESCRITO",
+		"tiempo_promedio_resolucion" : 26.03
+	},
+	{
+		"año" : 2020,
+		"tipo" : "Sugerencia",
+		"origen" : "WEB",
+		"tiempo_promedio_resolucion" : 27.63
+	},
+	{
+		"año" : 2020,
+		"tipo" : "Queja",
+		"origen" : "WEB",
+		"tiempo_promedio_resolucion" : 26.63
+	},
+	{
+		"año" : 2020,
+		"tipo" : "Queja",
+		"origen" : "LIBRO",
+		"tiempo_promedio_resolucion" : 26.72
+	},
+	{
+		"año" : 2020,
+		"tipo" : "Queja",
+		"origen" : "Servicio 012",
+		"tiempo_promedio_resolucion" : 26.74
+	},
+	{
+		"año" : 2020,
+		"tipo" : "Queja",
+		"origen" : "BUZON",
+		"tiempo_promedio_resolucion" : 5.00
+	},
+	{
+		"año" : 2020,
+		"tipo" : "Sugerencia",
+		"origen" : "Servicio 012",
+		"tiempo_promedio_resolucion" : 26.25
+	},
+	{
+		"año" : 2020,
+		"tipo" : "Sugerencia",
+		"origen" : "LIBRO",
+		"tiempo_promedio_resolucion" : 35.25
+	},
+	{
+		"año" : 2020,
+		"tipo" : "Sugerencia",
+		"origen" : "ESCRITO",
+		"tiempo_promedio_resolucion" : 37.50
+	}
+]}

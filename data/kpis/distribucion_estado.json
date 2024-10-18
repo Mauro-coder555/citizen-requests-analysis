@@ -1,0 +1,138 @@
+{
+"distribucion_estados": [
+	{
+		"año" : 2023,
+		"estado" : "Contestado",
+		"total_solicitudes" : 753
+	},
+	{
+		"año" : 2023,
+		"estado" : "Prestacional",
+		"total_solicitudes" : 6
+	},
+	{
+		"año" : 2023,
+		"estado" : "Anulada",
+		"total_solicitudes" : 62
+	},
+	{
+		"año" : 2023,
+		"estado" : "Remitida Órgano",
+		"total_solicitudes" : 3
+	},
+	{
+		"año" : 2023,
+		"estado" : "Remitido Órgano",
+		"total_solicitudes" : 34
+	},
+	{
+		"año" : 2023,
+		"estado" : "Inadmitida",
+		"total_solicitudes" : 32
+	},
+	{
+		"año" : 2023,
+		"estado" : "Remitido a Cons\/DT",
+		"total_solicitudes" : 1
+	},
+	{
+		"año" : 2022,
+		"estado" : "Prestacional",
+		"total_solicitudes" : 6
+	},
+	{
+		"año" : 2022,
+		"estado" : "Contestado",
+		"total_solicitudes" : 923
+	},
+	{
+		"año" : 2022,
+		"estado" : "Inadmitida",
+		"total_solicitudes" : 26
+	},
+	{
+		"año" : 2022,
+		"estado" : "Remitida Órgano",
+		"total_solicitudes" : 2
+	},
+	{
+		"año" : 2022,
+		"estado" : "Remitido Órgano",
+		"total_solicitudes" : 36
+	},
+	{
+		"año" : 2022,
+		"estado" : "Remitido a Cons\/DT",
+		"total_solicitudes" : 7
+	},
+	{
+		"año" : 2022,
+		"estado" : "Anulada",
+		"total_solicitudes" : 53
+	},
+	{
+		"año" : 2022,
+		"estado" : "Tributos",
+		"total_solicitudes" : 3
+	},
+	{
+		"año" : 2021,
+		"estado" : "Contestado",
+		"total_solicitudes" : 850
+	},
+	{
+		"año" : 2021,
+		"estado" : "Anulada",
+		"total_solicitudes" : 93
+	},
+	{
+		"año" : 2021,
+		"estado" : "Remitido Órgano",
+		"total_solicitudes" : 91
+	},
+	{
+		"año" : 2021,
+		"estado" : "Inadmitida",
+		"total_solicitudes" : 34
+	},
+	{
+		"año" : 2021,
+		"estado" : "Remitido a Cons\/DT",
+		"total_solicitudes" : 4
+	},
+	{
+		"año" : 2021,
+		"estado" : "Prestacional",
+		"total_solicitudes" : 17
+	},
+	{
+		"año" : 2020,
+		"estado" : "Remitido Órgano",
+		"total_solicitudes" : 90
+	},
+	{
+		"año" : 2020,
+		"estado" : "Contestado",
+		"total_solicitudes" : 660
+	},
+	{
+		"año" : 2020,
+		"estado" : "Anulada",
+		"total_solicitudes" : 61
+	},
+	{
+		"año" : 2020,
+		"estado" : "Inadmitida",
+		"total_solicitudes" : 25
+	},
+	{
+		"año" : 2020,
+		"estado" : "Prestacional",
+		"total_solicitudes" : 25
+	},
+	{
+		"año" : 2020,
+		"estado" : "Remitido a Cons\/DT",
+		"total_solicitudes" : 1
+	}
+]}

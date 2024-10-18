@@ -1,0 +1,123 @@
+{
+"volumen_solicitudes_por_origen": [
+	{
+		"año" : 2023,
+		"origen" : "LIBRO",
+		"total_solicitudes" : 62
+	},
+	{
+		"año" : 2023,
+		"origen" : "Servicio 012",
+		"total_solicitudes" : 171
+	},
+	{
+		"año" : 2023,
+		"origen" : "WEB",
+		"total_solicitudes" : 456
+	},
+	{
+		"año" : 2023,
+		"origen" : "ESCRITO",
+		"total_solicitudes" : 121
+	},
+	{
+		"año" : 2023,
+		"origen" : "OAMR",
+		"total_solicitudes" : 74
+	},
+	{
+		"año" : 2023,
+		"origen" : "BUZON",
+		"total_solicitudes" : 7
+	},
+	{
+		"año" : 2022,
+		"origen" : "WEB",
+		"total_solicitudes" : 470
+	},
+	{
+		"año" : 2022,
+		"origen" : "OAMR",
+		"total_solicitudes" : 51
+	},
+	{
+		"año" : 2022,
+		"origen" : "LIBRO",
+		"total_solicitudes" : 155
+	},
+	{
+		"año" : 2022,
+		"origen" : "ESCRITO",
+		"total_solicitudes" : 144
+	},
+	{
+		"año" : 2022,
+		"origen" : "Servicio 012",
+		"total_solicitudes" : 225
+	},
+	{
+		"año" : 2022,
+		"origen" : "BUZON",
+		"total_solicitudes" : 11
+	},
+	{
+		"año" : 2021,
+		"origen" : "Servicio 012",
+		"total_solicitudes" : 270
+	},
+	{
+		"año" : 2021,
+		"origen" : "ESCRITO",
+		"total_solicitudes" : 110
+	},
+	{
+		"año" : 2021,
+		"origen" : "WEB",
+		"total_solicitudes" : 549
+	},
+	{
+		"año" : 2021,
+		"origen" : "LIBRO",
+		"total_solicitudes" : 127
+	},
+	{
+		"año" : 2021,
+		"origen" : "OAMR",
+		"total_solicitudes" : 25
+	},
+	{
+		"año" : 2021,
+		"origen" : "BUZON",
+		"total_solicitudes" : 7
+	},
+	{
+		"año" : 2021,
+		"origen" : "FAX",
+		"total_solicitudes" : 1
+	},
+	{
+		"año" : 2020,
+		"origen" : "Servicio 012",
+		"total_solicitudes" : 166
+	},
+	{
+		"año" : 2020,
+		"origen" : "ESCRITO",
+		"total_solicitudes" : 58
+	},
+	{
+		"año" : 2020,
+		"origen" : "WEB",
+		"total_solicitudes" : 522
+	},
+	{
+		"año" : 2020,
+		"origen" : "LIBRO",
+		"total_solicitudes" : 115
+	},
+	{
+		"año" : 2020,
+		"origen" : "BUZON",
+		"total_solicitudes" : 1
+	}
+]}

@@ -1,0 +1,31 @@
+{
+"tasa_inadmitidas_anuladas": [
+	{
+		"año" : 2023,
+		"total_solicitudes" : 891,
+		"total_inadmitidas" : 32,
+		"total_anuladas" : 62,
+		"tasa_inadmitidas_anuladas" : 10.55
+	},
+	{
+		"año" : 2022,
+		"total_solicitudes" : 1056,
+		"total_inadmitidas" : 26,
+		"total_anuladas" : 53,
+		"tasa_inadmitidas_anuladas" : 7.48
+	},
+	{
+		"año" : 2021,
+		"total_solicitudes" : 1089,
+		"total_inadmitidas" : 34,
+		"total_anuladas" : 93,
+		"tasa_inadmitidas_anuladas" : 11.66
+	},
+	{
+		"año" : 2020,
+		"total_solicitudes" : 862,
+		"total_inadmitidas" : 25,
+		"total_anuladas" : 61,
+		"tasa_inadmitidas_anuladas" : 9.98
+	}
+]}
