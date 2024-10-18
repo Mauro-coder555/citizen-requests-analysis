@@ -1,5 +1,4 @@
-{
-"tiempo_promedio_resolucion": [
+[
 	{
 		"año" : 2023,
 		"tipo" : "Queja",
@@ -300,4 +299,4 @@
 		"origen" : "ESCRITO",
 		"tiempo_promedio_resolucion" : 37.50
 	}
-]}
+]

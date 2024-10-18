@@ -1,5 +1,4 @@
-{
-"volumen_solicitudes_por_origen": [
+[
 	{
 		"año" : 2023,
 		"origen" : "LIBRO",
@@ -120,4 +119,4 @@
 		"origen" : "BUZON",
 		"total_solicitudes" : 1
 	}
-]}
+]

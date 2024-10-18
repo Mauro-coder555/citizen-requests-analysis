@@ -1,5 +1,4 @@
-{
-"distribucion_estados": [
+[
 	{
 		"año" : 2023,
 		"estado" : "Contestado",
@@ -135,4 +134,4 @@
 		"estado" : "Remitido a Cons\/DT",
 		"total_solicitudes" : 1
 	}
-]}
+]

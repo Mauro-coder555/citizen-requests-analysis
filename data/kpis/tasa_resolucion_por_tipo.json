@@ -1,5 +1,4 @@
-{
-"tasa_resolucion_por_tipo": [
+[
 	{
 		"año" : 2023,
 		"tipo" : "Queja",
@@ -70,4 +69,4 @@
 		"solicitudes_resueltas" : 108,
 		"tasa_resolucion" : 67.92
 	}
-]}
+]

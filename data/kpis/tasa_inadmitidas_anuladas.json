@@ -1,5 +1,4 @@
-{
-"tasa_inadmitidas_anuladas": [
+ [
 	{
 		"año" : 2023,
 		"total_solicitudes" : 891,
@@ -28,4 +27,4 @@
 		"total_anuladas" : 61,
 		"tasa_inadmitidas_anuladas" : 9.98
 	}
-]}
+]
