@@ -45,7 +45,9 @@ El proyecto está organizado de la siguiente manera:
 | `ETL/load_processed_data.py`        | Realiza el procesamiento de datos desde el CSV, crea tablas en MySQL, inserta los datos y calcula KPIs.|
 | `app.py`                | Sirve los datos de la base de datos a la interfaz gráfica para la visualización en AMCharts.          |
 | `amcharts/index.html`   | Página principal que contiene los gráficos interactivos generados con AMCharts.                      |
-| `data/requests.csv`     | Archivo CSV origen que contiene las solicitudes de ciudanos.                                         |
+| `data/requests.csv`     | Archivo CSV origen que contiene las solicitudes de ciudanos | 
+| `data/kpis/`     | Carpeta que contiene los kpi's en formato json para una visualización rápida mediante GitHub Pages |  
+| `index.html`   | GitHub Page que contiene los gráficos interactivos generados con AMCharts para visualización de un dataset estático (de muestra) sin necesidad de levantar los contenedores.                                                               |
 
 ---
 
