@@ -22,14 +22,14 @@ def get_data_from_db(query):
     conn.close()
     return results
 
-# Ruta para exponer el KPI 1: Tiempo de Resolución de Solicitudes
+# Ruta para exponer el KPI 1: Tasa de Resolución de Solicitudes
 @app.route('/get_tasa_resolucion_por_tipo', methods=['GET'])
 def get_tasa_resolucion_por_tipo():
     query = "SELECT * FROM tasa_resolucion_por_tipo"
     results = get_data_from_db(query)
     return jsonify(results)
 
-# Ruta para exponer el KPI 3: Estado de las Solicitudes
+# Ruta para exponer el KPI 2: Volumen de solicitudes por origen
 @app.route('/get_volumen_solicitudes_por_origen', methods=['GET'])
 def get_volumen_solicitudes_por_origen():
     query = "SELECT * FROM volumen_solicitudes_por_origen"
@@ -43,14 +43,14 @@ def get_distribucion_estados():
     results = get_data_from_db(query)
     return jsonify(results)
 
-# Ruta para exponer el KPI 2: Porcentaje de origen 'LIBRO'
+# Ruta para exponer el KPI 4: Tiempo promedio de resolucion
 @app.route('/get_tiempo_promedio_resolucion', methods=['GET'])
 def get_tiempo_promedio_resolucion():
     query = "SELECT * FROM tiempo_promedio_resolucion"
     results = get_data_from_db(query)
     return jsonify(results)
 
-# Ruta para exponer el KPI 3: Estado de las Solicitudes
+# Ruta para exponer el KPI 5: Tasa inadmitidas anuladas
 @app.route('/get_tasa_inadmitidas_anuladas', methods=['GET'])
 def get_tasa_rechazadas_anuladas():
     query = "SELECT * FROM tasa_inadmitidas_anuladas"
