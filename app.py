@@ -9,7 +9,7 @@ CORS(app)
 config = {
     'user': 'user',          # Cambia por tu usuario de MySQL
     'password': 'password',   # Cambia por tu contraseña de MySQL
-    'host': 'localhost',      # Cambia si tu servidor está en otro lugar
+    'host': 'mysql_db',      # Cambia si tu servidor está en otro lugar
     'database': 'data_db'     # Cambia por el nombre de tu base de datos
 }
 
@@ -59,4 +59,4 @@ def get_tasa_rechazadas_anuladas():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0', port=5000) 

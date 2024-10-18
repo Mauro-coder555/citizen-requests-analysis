@@ -12,11 +12,28 @@ services:
       - ./mysql-data:/var/lib/mysql
     networks:
       - my_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   setup_db:
     build: .
-    command: >
-      /bin/sh -c "python setup_db.py && python ETL/load_processed_data.py && python app.py"
+    command: /bin/sh -c "python setup_db.py && python ETL/load_processed_data.py"
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    networks:
+      - my_network
+
+  app:
+    build: .
+    command: /bin/sh -c "python app.py"
+    depends_on:
+      - setup_db
+    ports:
+      - "5000:5000"
     networks:
       - my_network
 
