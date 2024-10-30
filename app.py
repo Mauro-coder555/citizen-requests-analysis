@@ -5,7 +5,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Conexión a la base de datos (esto puede ir en una función si prefieres)
+# Conexión a la base de datos
 config = {
     'user': 'user',
     'password': 'password',
